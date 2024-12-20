@@ -1,5 +1,6 @@
 package com.example.breeze.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import com.example.breeze.R
 import com.example.breeze.adapter.NewsAdapter
 import com.example.breeze.api.NewsAPI
 import com.example.breeze.models.News
+import com.example.breeze.ui.NewsWebView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,9 +49,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(context)
-                    recyclerView.adapter = NewsAdapter(titleList, imageUrlList, urlList, excerptList, this@HomeFragment)
-
+                    val newsAdapter = NewsAdapter(titleList, imageUrlList, urlList, excerptList, this@HomeFragment)
+                    recyclerView.adapter = newsAdapter
                     Log.d("HomeFragment", "RecyclerView adapter attached")
+
+                    newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener{
+                        override fun onCardClick(position: Int) {
+                            val intent = Intent(this@HomeFragment.context, NewsWebView::class.java)
+                            intent.putExtra("url", urlList[position])
+                            startActivity(intent)
+                        }
+                    })
                 } else {
                     Log.d("HomeFragment", "No data found in API response")
                 }

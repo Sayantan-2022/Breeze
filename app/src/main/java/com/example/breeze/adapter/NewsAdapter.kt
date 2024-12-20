@@ -1,6 +1,5 @@
 package com.example.breeze.adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,12 +17,22 @@ class NewsAdapter(var titleList: MutableList<String>,
                   val context: Fragment)
     : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsAdapter.NewsViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.default_card, parent, false)
-        return NewsViewHolder(itemView)
+    private lateinit var newsListener: onCardClickListener
+
+    interface onCardClickListener{
+        fun onCardClick(position: Int)
     }
 
-    override fun onBindViewHolder(holder: NewsAdapter.NewsViewHolder, position: Int) {
+    fun setOnCardClickListener(listener: onCardClickListener){
+        newsListener = listener
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsAdapter.NewsViewHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.default_card, parent, false)
+        return NewsViewHolder(itemView, newsListener)
+    }
+
+    override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
         holder.title.text=titleList[position]
         Glide.with(context)
             .load(imageUrlList[position])
@@ -38,9 +47,13 @@ class NewsAdapter(var titleList: MutableList<String>,
         return titleList.size
     }
 
-    class NewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class NewsViewHolder(itemView: View, listener: onCardClickListener) : RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.tvHeading)
         val image = itemView.findViewById<ShapeableImageView>(R.id.headingImage)
         val excerpt = itemView.findViewById<TextView>(R.id.tvExcerpt)
+
+        init {
+            listener.onCardClick(adapterPosition)
+        }
     }
 }
