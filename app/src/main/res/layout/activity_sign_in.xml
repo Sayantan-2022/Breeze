@@ -19,13 +19,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="5dp"
+            app:startIconDrawable="@drawable/baseline_email_24"
             app:boxCornerRadiusBottomEnd="30dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ipUsername"
+                android:id="@+id/ipEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Username"
+                android:hint="Email"
                 tools:ignore="HardcodedText" />
         </com.google.android.material.textfield.TextInputLayout>
 

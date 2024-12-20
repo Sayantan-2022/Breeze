@@ -9,17 +9,27 @@ import com.google.firebase.auth.FirebaseAuth
 
 class SplashScreen : AppCompatActivity() {
 
+    private lateinit var firebaseAuth : FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_splash_screen)
         supportActionBar?.hide()
 
-        Handler().postDelayed({
-            val intent = Intent(this, SignUp::class.java)
-            startActivity(intent)
-            finish()
+        firebaseAuth = FirebaseAuth.getInstance()
 
+        Handler().postDelayed({
+            if (firebaseAuth.currentUser != null) {
+                // User is already signed in, navigate to MainActivity
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            } else {
+                // User is not signed in, navigate to SignUp
+                val intent = Intent(this, SignUp::class.java)
+                startActivity(intent)
+            }
+            finish()
         }, 2000)
     }
 }

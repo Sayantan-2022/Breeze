@@ -19,8 +19,7 @@ import com.google.firebase.database.FirebaseDatabase
 
 class SignIn : AppCompatActivity() {
 
-    lateinit var database: DatabaseReference
-    private var firebaseAuth = FirebaseAuth.getInstance()
+    lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,16 +27,16 @@ class SignIn : AppCompatActivity() {
         setContentView(R.layout.activity_sign_in)
 
         val btnSignIn = findViewById<Button>(R.id.btnSignIn)
-        val etUsername = findViewById<TextInputEditText>(R.id.ipUsername)
+        val etEmail = findViewById<TextInputEditText>(R.id.ipEmail)
         val etPassword = findViewById<TextInputEditText>(R.id.ipPassword)
         val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
 
         btnSignIn.setOnClickListener {
-            val username = etUsername.text.toString()
+            val email = etEmail.text.toString()
             val password = etPassword.text.toString()
 
-            if(username.isNotEmpty() && password.isNotEmpty()) {
-                readData(username, password)
+            if(email.isNotEmpty() && password.isNotEmpty()) {
+                readData(email, password)
             } else {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             }
@@ -50,33 +49,29 @@ class SignIn : AppCompatActivity() {
         }
     }
 
-    private fun readData(username: String, password: String) {
-        database = FirebaseDatabase.getInstance().getReference("Accounts")
-        database.child(username).get().addOnSuccessListener {
-            if (it.exists()) {
-                val readPassword = it.child("password").value
-                if (readPassword == password) {
+    private fun readData(email: String, password: String) {
+        firebaseAuth = FirebaseAuth.getInstance()
+
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    Toast.makeText(this, "Sign In Successful!", Toast.LENGTH_SHORT).show()
+
+                    val uid = it.result.user?.uid.toString()
+
                     val intent = Intent(this, MainActivity::class.java)
-                    intent.putExtra("username", username)
+                    intent.putExtra("uid", uid)
+                    intent.putExtra("email", email)
                     startActivity(intent)
                     finish()
                 } else {
-                    Toast.makeText(this, "Invalid Username or Password!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Invalid Email or Password!", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(this, "Invalid Username or Password!", Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener {
+                Toast.makeText(this,
+                    "There is a problem from our side,\nPlease try again!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-        }.addOnFailureListener {
-            Toast.makeText(this, "Failed to read data.\nPlease try again later!", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        if(firebaseAuth.currentUser != null){
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
     }
 }
