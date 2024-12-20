@@ -19,7 +19,9 @@ interface NewsAPI {
           @Query("language")
           language : String,
           @Query("country")
-          country : String
+          country : String,
+          @Query("page")
+          page : Int
       ) : Call<News>
 
       @GET("v2/search/articles")

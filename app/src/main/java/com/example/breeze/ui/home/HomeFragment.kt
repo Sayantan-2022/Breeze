@@ -3,9 +3,7 @@ package com.example.breeze.ui.home
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.breeze.R
@@ -31,7 +29,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             .build()
 
         val api = retrofitBuilder.create(NewsAPI::class.java)
-        val trendingNews = api.getTrendings("General", "en", "in")
+        val trendingNews = api.getTrendings("General", "en", "in", 2)
 
         trendingNews.enqueue(object : Callback<News?> {
             override fun onResponse(call: Call<News?>, response: Response<News?>) {
@@ -45,17 +43,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     val titleList = dataList.map { it.title }.toMutableList()
                     val imageUrlList = dataList.map { it.thumbnail }.toMutableList()
                     val urlList = dataList.map { it.url }.toMutableList()
+                    val excerptList = dataList.map { it.excerpt }.toMutableList()
 
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(context)
-                    recyclerView.adapter = NewsAdapter(titleList, imageUrlList, urlList, this@HomeFragment)
+                    recyclerView.adapter = NewsAdapter(titleList, imageUrlList, urlList, excerptList, this@HomeFragment)
 
                     Log.d("HomeFragment", "RecyclerView adapter attached")
                 } else {
                     Log.d("HomeFragment", "No data found in API response")
                 }
             }
-
             override fun onFailure(call: Call<News?>, t: Throwable) {
                 Log.e("HomeFragment", "API call failed: ${t.message}")
             }

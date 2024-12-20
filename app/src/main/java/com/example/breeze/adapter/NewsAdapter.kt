@@ -14,6 +14,7 @@ import com.google.android.material.imageview.ShapeableImageView
 class NewsAdapter(var titleList: MutableList<String>,
                   var imageUrlList: MutableList<String>,
                   var urlList: MutableList<String>,
+                  var excerptList: MutableList<String>,
                   val context: Fragment)
     : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
@@ -30,6 +31,7 @@ class NewsAdapter(var titleList: MutableList<String>,
             .placeholder(R.drawable.baseline_downloading_24)
             .error(R.drawable.baseline_error_outline_24)
             .into(holder.image)
+        holder.excerpt.text=excerptList[position]
     }
 
     override fun getItemCount(): Int {
@@ -39,6 +41,6 @@ class NewsAdapter(var titleList: MutableList<String>,
     class NewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.tvHeading)
         val image = itemView.findViewById<ShapeableImageView>(R.id.headingImage)
-
+        val excerpt = itemView.findViewById<TextView>(R.id.tvExcerpt)
     }
 }
