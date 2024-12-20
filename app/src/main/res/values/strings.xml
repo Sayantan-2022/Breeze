@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Breeze</string>
+    <string name="already_reg"><u>Already Registered?\nSign In</u></string>
+    <string name="forgot_pass"><u>Forgot Password?</u></string>
+</resources>

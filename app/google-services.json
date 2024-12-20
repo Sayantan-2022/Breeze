@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "745648417763",
+    "project_id": "breeze-app-1-0",
+    "storage_bucket": "breeze-app-1-0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745648417763:android:f974ef3b898f1d5b0a4ed6",
+        "android_client_info": {
+          "package_name": "com.example.breeze"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_XvO31P1cbzCmzmmZKzIvmTjL0H5tfEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
