@@ -25,16 +25,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("HomeFragment", "onViewCreated called")
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        val newsAdapter = NewsAdapter(mutableListOf(), mutableListOf(), mutableListOf(), this@HomeFragment)
-        recyclerView.adapter = newsAdapter
-
-        Log.d("HomeFragment", "RecyclerView adapter attached")
-        fetchTrendingNews()
-    }
-
-    private fun fetchTrendingNews(){
         val retrofitBuilder = Retrofit.Builder()
             .baseUrl("https://news-api14.p.rapidapi.com/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -56,9 +46,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     val imageUrlList = dataList.map { it.thumbnail }.toMutableList()
                     val urlList = dataList.map { it.url }.toMutableList()
 
-                    val newsAdapter = NewsAdapter(mutableListOf(), mutableListOf(), mutableListOf(), this@HomeFragment)
-                    newsAdapter.updateData(titleList, imageUrlList, urlList)
-                    Log.d("HomeFragment", "Adapter data updated")
+                    val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+                    recyclerView.layoutManager = LinearLayoutManager(context)
+                    recyclerView.adapter = NewsAdapter(titleList, imageUrlList, urlList, this@HomeFragment)
+
+                    Log.d("HomeFragment", "RecyclerView adapter attached")
                 } else {
                     Log.d("HomeFragment", "No data found in API response")
                 }

@@ -41,14 +41,4 @@ class NewsAdapter(var titleList: MutableList<String>,
         val image = itemView.findViewById<ShapeableImageView>(R.id.headingImage)
 
     }
-
-    fun updateData(newTitles: List<String>, newImages: List<String>, newUrls: List<String>) {
-        titleList.clear()
-        titleList.addAll(newTitles)
-        imageUrlList.clear()
-        imageUrlList.addAll(newImages)
-        urlList.clear()
-        urlList.addAll(newUrls)
-        notifyDataSetChanged() // Notify adapter to refresh the data
-    }
 }
