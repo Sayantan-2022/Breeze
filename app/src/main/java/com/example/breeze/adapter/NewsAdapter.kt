@@ -41,6 +41,10 @@ class NewsAdapter(var titleList: MutableList<String>,
             .error(R.drawable.baseline_error_outline_24)
             .into(holder.image)
         holder.excerpt.text=excerptList[position]
+
+        holder.itemView.setOnClickListener{
+            newsListener.onCardClick(position)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -51,9 +55,5 @@ class NewsAdapter(var titleList: MutableList<String>,
         val title = itemView.findViewById<TextView>(R.id.tvHeading)
         val image = itemView.findViewById<ShapeableImageView>(R.id.headingImage)
         val excerpt = itemView.findViewById<TextView>(R.id.tvExcerpt)
-
-        init {
-            listener.onCardClick(adapterPosition)
-        }
     }
 }
