@@ -25,6 +25,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val uid = arguments?.getString("uid").toString()
+
         val etQuery = view.findViewById<TextInputEditText>(R.id.etQuery)
         val btnSearch = view.findViewById<ImageButton>(R.id.btnSearch)
 
@@ -36,21 +38,21 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         val api = retrofitBuilder.create(NewsAPI::class.java)
 
         val trendingNews = api.getTrendings("General", "en", "in", 1)
-        loadNews(trendingNews, view)
+        loadNews(trendingNews, view, uid)
 
         btnSearch.setOnClickListener {
             val query = etQuery.text.toString().trim()
             Log.d("SearchFragment", "Search button clicked with query: $query")// Get the latest query from the input field
             if (query.isNotEmpty()) {
                 val searchedNews = api.searchNews(query, "en")
-                loadNews(searchedNews, view)
+                loadNews(searchedNews, view, uid)
             } else {
                 Toast.makeText(this@SearchFragment.context, "Empty Search!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun loadNews(newsCall: Call<News>, view: View) {
+    private fun loadNews(newsCall: Call<News>, view: View, uid : String) {
         newsCall.enqueue(object : Callback<News?> {
             override fun onResponse(call: Call<News?>, response: Response<News?>) {
                 val responseBody = response.body()
@@ -64,7 +66,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(context)
-                    val newsAdapter = NewsAdapter(titleList, imageUrlList, urlList, excerptList, this@SearchFragment)
+                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, uid, this@SearchFragment)
                     recyclerView.adapter = newsAdapter
                     Log.d("SearchFragment", "RecyclerView adapter updated with new data")
 

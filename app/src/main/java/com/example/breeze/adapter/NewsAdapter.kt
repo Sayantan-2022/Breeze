@@ -3,17 +3,23 @@ package com.example.breeze.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.breeze.R
+import com.example.breeze.models.Bookmark
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+
+private lateinit var database : DatabaseReference
 
 class NewsAdapter(var titleList: MutableList<String>,
                   var imageUrlList: MutableList<String>,
-                  var urlList: MutableList<String>,
                   var excerptList: MutableList<String>,
+                  val uid : String,
                   val context: Fragment)
     : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
@@ -33,6 +39,8 @@ class NewsAdapter(var titleList: MutableList<String>,
     }
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
+        database = FirebaseDatabase.getInstance().getReference("Bookmarks")
+
         holder.title.text=titleList[position]
         Glide.with(context)
             .load(imageUrlList[position])
@@ -45,6 +53,26 @@ class NewsAdapter(var titleList: MutableList<String>,
         holder.itemView.setOnClickListener{
             newsListener.onCardClick(position)
         }
+
+        holder.btnBookmark.setOnClickListener {
+            if(isBookmarked(uid, titleList[position])){
+               database.child(uid).child(titleList[position]).removeValue()
+            } else {
+                val bookmark = Bookmark(imageUrlList[position], excerptList[position])
+                database.child(uid).child(titleList[position]).setValue(bookmark)
+            }
+        }
+    }
+
+    private fun isBookmarked(uid : String, title : String): Boolean {
+        database = FirebaseDatabase.getInstance().getReference("Bookmarks")
+        var isBookmarked = false
+        database.child(uid).child(title).get().addOnSuccessListener {
+            if (it.exists()) {
+                isBookmarked = true
+            }
+        }
+        return isBookmarked
     }
 
     override fun getItemCount(): Int {
@@ -55,5 +83,6 @@ class NewsAdapter(var titleList: MutableList<String>,
         val title = itemView.findViewById<TextView>(R.id.tvHeading)
         val image = itemView.findViewById<ShapeableImageView>(R.id.headingImage)
         val excerpt = itemView.findViewById<TextView>(R.id.tvExcerpt)
+        val btnBookmark = itemView.findViewById<ImageButton>(R.id.btnBookmark)
     }
 }

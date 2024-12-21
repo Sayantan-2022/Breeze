@@ -25,6 +25,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("HomeFragment", "onViewCreated called")
 
+        val uid = arguments?.getString("uid").toString()
+
         val retrofitBuilder = Retrofit.Builder()
             .baseUrl("https://news-api14.p.rapidapi.com/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -49,7 +51,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(context)
-                    val newsAdapter = NewsAdapter(titleList, imageUrlList, urlList, excerptList, this@HomeFragment)
+                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, uid, this@HomeFragment)
                     recyclerView.adapter = newsAdapter
                     Log.d("HomeFragment", "RecyclerView adapter attached")
 

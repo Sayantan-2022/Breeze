@@ -17,22 +17,28 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        val uid = intent.getStringExtra("uid").toString()
+
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
-        replaceFragment(HomeFragment())
+        replaceFragment(HomeFragment(), uid)
 
         bottomNav.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.home -> replaceFragment(HomeFragment())
-                R.id.search -> replaceFragment(SearchFragment())
-                R.id.bookmarks -> replaceFragment(BookmarksFragment())
+                R.id.home -> replaceFragment(HomeFragment(), uid)
+                R.id.search -> replaceFragment(SearchFragment(), uid)
+                R.id.bookmarks -> replaceFragment(BookmarksFragment(), uid)
                 else -> {}
             }
             true
         }
     }
 
-    private fun replaceFragment(fragment: Fragment) {
+    private fun replaceFragment(fragment: Fragment, uid : String) {
+        val bundle = Bundle()
+        bundle.putString("uid", uid)
+        fragment.arguments = bundle
+
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameLayout, fragment)

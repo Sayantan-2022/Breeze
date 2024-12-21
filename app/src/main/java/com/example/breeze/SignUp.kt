@@ -51,7 +51,6 @@ class SignUp : AppCompatActivity() {
                                 database.child(uid).setValue(account)
                                 val intent = Intent(this, MainActivity::class.java)
                                 intent.putExtra("uid", uid)
-                                intent.putExtra("email", email)
                                 startActivity(intent)
                                 finish()
                             } else {

@@ -32,7 +32,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="305dp"
+                android:layout_width="312dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
@@ -56,11 +56,12 @@
                     android:text="Excerpt" />
             </LinearLayout>
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <ImageButton
                 android:id="@+id/btnBookmark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center"
+                android:background="@drawable/image_button_background"
                 android:clickable="true"
                 android:contentDescription="Add bookmark"
                 android:focusable="true"
