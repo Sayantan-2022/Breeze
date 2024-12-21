@@ -2,6 +2,7 @@ package com.example.breeze
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -22,25 +23,27 @@ class ForgotPassword : AppCompatActivity() {
         setContentView(R.layout.activity_forgot_password)
 
         val btnChangePassword = findViewById<Button>(R.id.btnChangePassword)
-        val etUsername = findViewById<TextInputEditText>(R.id.ipUsername)
         val etEmail = findViewById<TextInputEditText>(R.id.ipEmail)
-        val etNewPassword = findViewById<TextInputEditText>(R.id.ipNewPassword)
-        val etRePassword = findViewById<TextInputEditText>(R.id.ipRePassword)
 
         btnChangePassword.setOnClickListener {
-            val username = etUsername.text?.toString()
             val email = etEmail.text?.toString()
-            val newPassword = etNewPassword.text?.toString()
-            val rePassword = etRePassword.text?.toString()
 
-            if (username != null && email != null && newPassword != null && rePassword != null) {
-                if (newPassword == rePassword) {
-                    updateData(username, newPassword)
-                } else {
-                    Toast.makeText(this, "Passwords do not match!", Toast.LENGTH_SHORT).show()
-                }
+            firebaseAuth = FirebaseAuth.getInstance()
+
+            if (email != null && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                firebaseAuth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener {
+                        if(it.isSuccessful){
+                            Toast.makeText(this, "Password reset link sent to your email!", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this, SignIn::class.java)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            Toast.makeText(this, "Something went wrong!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
             } else {
-                Toast.makeText(this, "Please fill all fields!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a valid Email ID!", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -67,15 +70,6 @@ class ForgotPassword : AppCompatActivity() {
             }.addOnFailureListener {
                 Toast.makeText(this, "Failed to fetch data!", Toast.LENGTH_SHORT).show()
             }
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        if(firebaseAuth.currentUser != null){
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
         }
     }
 }
