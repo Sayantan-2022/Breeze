@@ -35,11 +35,9 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         val api = retrofitBuilder.create(NewsAPI::class.java)
 
-        // Load trending news initially
         val trendingNews = api.getTrendings("General", "en", "in", 1)
         loadNews(trendingNews, view)
 
-        // Handle search button click
         btnSearch.setOnClickListener {
             val query = etQuery.text.toString().trim()
             Log.d("SearchFragment", "Search button clicked with query: $query")// Get the latest query from the input field
@@ -79,7 +77,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                     })
                 } else {
                     Log.d("SearchFragment", "No data found for the query")
-                    // Clear the RecyclerView if no data is found
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.adapter = null
                 }
