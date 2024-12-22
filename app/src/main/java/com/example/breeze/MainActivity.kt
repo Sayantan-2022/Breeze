@@ -10,14 +10,19 @@ import com.example.breeze.ui.bookmarks.BookmarksFragment
 import com.example.breeze.ui.home.HomeFragment
 import com.example.breeze.ui.search.SearchFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var firebaseAuth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        val uid = intent.getStringExtra("uid").toString()
+        firebaseAuth = FirebaseAuth.getInstance()
+
+        val uid = firebaseAuth.currentUser?.uid.toString()
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 

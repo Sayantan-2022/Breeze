@@ -1,5 +1,6 @@
 package com.example.breeze.adapter
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,12 +55,26 @@ class NewsAdapter(var titleList: MutableList<String>,
             newsListener.onCardClick(position)
         }
 
+        var title = titleList[position]
+        if(title.contains('.')) {
+            title = title.substring(0, title.indexOf('.'))
+        }
+
+        if(isBookmarked(uid, title)){
+            holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
+        } else {
+            holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
+        }
+
         holder.btnBookmark.setOnClickListener {
-            if(isBookmarked(uid, titleList[position])){
-               database.child(uid).child(titleList[position]).removeValue()
+            if(isBookmarked(uid, title)){
+                database.child(uid).child(title).removeValue()
+                database.child(uid)
+                holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
             } else {
                 val bookmark = Bookmark(imageUrlList[position], excerptList[position])
-                database.child(uid).child(titleList[position]).setValue(bookmark)
+                database.child(uid).child(title).setValue(bookmark)
+                holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
             }
         }
     }
