@@ -68,7 +68,7 @@ class NewsAdapter(var titleList: MutableList<String>,
         }
 
         holder.btnBookmark.setOnClickListener {
-            if(isBookmarked(uid, title)){
+            if(isBookmarked(uid, titleList[position])){
                 database.child(uid).child(title).removeValue()
                 database.child(uid)
                 holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
@@ -82,13 +82,14 @@ class NewsAdapter(var titleList: MutableList<String>,
 
     private fun isBookmarked(uid : String, title : String): Boolean {
         database = FirebaseDatabase.getInstance().getReference("Bookmarks")
-        var isBookmarked = false
-        database.child(uid).child(title).get().addOnSuccessListener {
-            if (it.exists()) {
-                isBookmarked = true
+        database.child(uid).get().addOnSuccessListener {
+            for(child in it.children){
+                if(child.child("title").value.toString() == title){
+                    return@addOnSuccessListener
+                }
             }
         }
-        return isBookmarked
+        return false
     }
 
     override fun getItemCount(): Int {

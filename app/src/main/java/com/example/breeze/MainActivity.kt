@@ -1,6 +1,8 @@
 package com.example.breeze
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -10,6 +12,8 @@ import com.example.breeze.ui.bookmarks.BookmarksFragment
 import com.example.breeze.ui.home.HomeFragment
 import com.example.breeze.ui.search.SearchFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
@@ -25,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         val uid = firebaseAuth.currentUser?.uid.toString()
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        val btnProfile = findViewById<ShapeableImageView>(R.id.btnProfile)
 
         replaceFragment(HomeFragment(), uid)
 
@@ -36,6 +41,12 @@ class MainActivity : AppCompatActivity() {
                 else -> {}
             }
             true
+        }
+
+        btnProfile.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            intent.putExtra("uid", uid)
+            startActivity(intent)
         }
     }
 
