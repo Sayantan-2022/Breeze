@@ -20,6 +20,7 @@ private lateinit var database : DatabaseReference
 class NewsAdapter(var titleList: MutableList<String>,
                   var imageUrlList: MutableList<String>,
                   var excerptList: MutableList<String>,
+                  val urlList: MutableList<String>,
                   val uid : String,
                   val context: Fragment)
     : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
@@ -72,7 +73,7 @@ class NewsAdapter(var titleList: MutableList<String>,
                 database.child(uid)
                 holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
             } else {
-                val bookmark = Bookmark(imageUrlList[position], excerptList[position])
+                val bookmark = Bookmark(titleList[position], imageUrlList[position], excerptList[position], urlList[position])
                 database.child(uid).child(title).setValue(bookmark)
                 holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
             }

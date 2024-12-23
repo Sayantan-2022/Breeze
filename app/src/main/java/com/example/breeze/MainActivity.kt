@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment, uid : String) {
+    fun replaceFragment(fragment: Fragment, uid : String) {
         val bundle = Bundle()
         bundle.putString("uid", uid)
         fragment.arguments = bundle

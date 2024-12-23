@@ -51,7 +51,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(context)
-                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, uid, this@HomeFragment)
+                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@HomeFragment)
                     recyclerView.adapter = newsAdapter
                     Log.d("HomeFragment", "RecyclerView adapter attached")
 

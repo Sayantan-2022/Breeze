@@ -1,60 +1,76 @@
 package com.example.breeze.ui.bookmarks
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.breeze.MainActivity
 import com.example.breeze.R
+import com.example.breeze.adapter.NewsAdapter
+import com.example.breeze.models.News
+import com.example.breeze.ui.NewsWebView
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import retrofit2.Call
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class BookmarksFragment : Fragment(R.layout.fragment_bookmarks) {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [BookmarksFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class BookmarksFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var database : DatabaseReference
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val uid = arguments?.getString("uid").toString()
+
+        var titleList = mutableListOf<String>()
+        var imageUrlList = mutableListOf<String>()
+        var excerptList = mutableListOf<String>()
+        var urlList = mutableListOf<String>()
+
+        database = FirebaseDatabase.getInstance().getReference("Bookmarks")
+
+        database.child(uid).get().addOnSuccessListener {
+            if(it.exists()){
+                for (child in it.children){
+                    titleList.add(child.child("title").value.toString())
+                    imageUrlList.add(child.child("imageUrl").value.toString())
+                    excerptList.add(child.child("excerpt").value.toString())
+                    urlList.add(child.child("url").value.toString())
+                }
+
+                loadNews(titleList, imageUrlList, excerptList, urlList, view, uid)
+            } else {
+                (activity as MainActivity).replaceFragment(NoBookmarkFragment(), uid)
+                Snackbar.make(view, "No Bookmarks found!", Snackbar.LENGTH_SHORT).show()
+            }
+        }.addOnFailureListener {
+            Snackbar.make(view, "Failed to fetch bookmarks!", Snackbar.LENGTH_SHORT).show()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_bookmarks, container, false)
-    }
+    private fun loadNews(titleList : MutableList<String>,
+                         imageUrlList : MutableList<String>,
+                         excerptList : MutableList<String>,
+                         urlList : MutableList<String>,
+                         view : View,
+                         uid : String) {
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@BookmarksFragment)
+        recyclerView.adapter = newsAdapter
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment BookmarksFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            BookmarksFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener {
+            override fun onCardClick(position: Int) {
+                val intent = Intent(this@BookmarksFragment.context, NewsWebView::class.java)
+                intent.putExtra("url", urlList[position])
+                startActivity(intent)
             }
+        })
     }
 }

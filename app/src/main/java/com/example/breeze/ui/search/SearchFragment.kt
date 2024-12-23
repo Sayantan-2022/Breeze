@@ -66,7 +66,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(context)
-                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, uid, this@SearchFragment)
+                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@SearchFragment)
                     recyclerView.adapter = newsAdapter
                     Log.d("SearchFragment", "RecyclerView adapter updated with new data")
 
