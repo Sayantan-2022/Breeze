@@ -22,7 +22,6 @@ class NewsWebView : AppCompatActivity() {
         webView.apply {
             settings.javaScriptEnabled = true
             settings.safeBrowsingEnabled = true
-            settings.builtInZoomControls = true
             loadUrl(url.toString())
         }
     }

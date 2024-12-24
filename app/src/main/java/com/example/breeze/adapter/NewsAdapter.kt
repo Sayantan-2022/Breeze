@@ -1,5 +1,6 @@
 package com.example.breeze.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,11 +61,14 @@ class NewsAdapter(var titleList: MutableList<String>,
             title = title.substring(0, title.indexOf('.'))
         }
 
-        isBookmarked(uid, title) { bookmarked ->
-            holder.btnBookmark.setImageResource(
-                if (bookmarked) R.drawable.baseline_bookmark_remove_24
-                else R.drawable.baseline_bookmark_border_24
-            )
+        database.child(uid).get().addOnSuccessListener { snapshot ->
+            for (child in snapshot.children) {
+                if (child.child("title").value.toString() == titleList[position]) {
+                    holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
+                }
+            }
+        }.addOnFailureListener {
+            Log.e("NewsAdapter", "Failed to fetch bookmarks: ${it.message}")
         }
 
         holder.btnBookmark.setOnClickListener {

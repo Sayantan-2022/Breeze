@@ -17,6 +17,7 @@ import com.example.breeze.adapter.NewsAdapter
 import com.example.breeze.api.NewsAPI
 import com.example.breeze.models.News
 import com.example.breeze.ui.NewsWebView
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.Runnable
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,12 +29,9 @@ import kotlin.random.Random
 
 class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefreshListener{
 
-    val uid = arguments?.getString("uid").toString()
-
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view : View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("HomeFragment", "onViewCreated called")
 
         val uid = arguments?.getString("uid").toString()
         val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
@@ -84,6 +82,8 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onRefresh() {
+        val uid = arguments?.getString("uid").toString()
+
         val retrofitBuilder = Retrofit.Builder()
             .baseUrl("https://news-api14.p.rapidapi.com/")
             .addConverterFactory(GsonConverterFactory.create())

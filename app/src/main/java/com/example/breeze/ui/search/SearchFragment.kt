@@ -2,6 +2,7 @@ package com.example.breeze.ui.search
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -15,19 +16,22 @@ import com.example.breeze.adapter.NewsAdapter
 import com.example.breeze.api.NewsAPI
 import com.example.breeze.models.News
 import com.example.breeze.ui.NewsWebView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.Runnable
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class SearchFragment : Fragment(R.layout.fragment_search) {
+class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.OnRefreshListener {
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         val uid = arguments?.getString("uid").toString()
+        val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
 
         val etQuery = view.findViewById<TextInputEditText>(R.id.etQuery)
         val btnSearch = view.findViewById<ImageButton>(R.id.btnSearch)
@@ -44,14 +48,16 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         btnSearch.setOnClickListener {
             val searchedQuery = etQuery.text.toString().trim()
-            Log.d("SearchFragment", "Search button clicked with query: $searchedQuery")// Get the latest query from the input field
+
             if (searchedQuery.isNotEmpty()) {
                 val searchedNews = api.searchNews(searchedQuery, "en")
                 loadNews(searchedNews, view, uid)
             } else {
-                Toast.makeText(this@SearchFragment.context, "Empty Search!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(view, "Empty Search!", Toast.LENGTH_SHORT).show()
             }
         }
+
+        swipeRefreshLayout.setOnRefreshListener(this@SearchFragment)
     }
 
     private fun loadNews(newsCall: Call<News>, view: View, uid : String) {
@@ -89,5 +95,29 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 Log.e("SearchFragment", "API call failed: ${t.message}")
             }
         })
+    }
+
+    override fun onRefresh() {
+        val uid = arguments?.getString("uid").toString()
+
+        val etQuery = view?.findViewById<TextInputEditText>(R.id.etQuery)
+        val retrofitBuilder = Retrofit.Builder()
+            .baseUrl("https://news-api14.p.rapidapi.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val api = retrofitBuilder.create(NewsAPI::class.java)
+
+        val searchedQuery = etQuery?.text.toString().trim()
+
+        if (searchedQuery.isNotEmpty()) {
+            val searchedNews = api.searchNews(searchedQuery, "en")
+            view?.let { loadNews(searchedNews, it, uid) }
+        } else {
+            view?.let { Snackbar.make(it, "Empty Search!", Toast.LENGTH_SHORT).show() }
+        }
+
+        val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+        Handler().postDelayed(Runnable { swipeRefreshLayout?.isRefreshing = false }, 2000)
     }
 }
