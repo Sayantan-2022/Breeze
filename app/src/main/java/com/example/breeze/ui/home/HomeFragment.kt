@@ -1,14 +1,17 @@
 package com.example.breeze.ui.home
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,8 +20,7 @@ import com.example.breeze.adapter.NewsAdapter
 import com.example.breeze.api.NewsAPI
 import com.example.breeze.models.News
 import com.example.breeze.ui.NewsWebView
-import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.Runnable
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -60,6 +62,8 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
                     recyclerView.layoutManager = LinearLayoutManager(context)
                     val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@HomeFragment)
                     recyclerView.adapter = newsAdapter
+
+                    this@HomeFragment.context?.let { swipeFunction(recyclerView, newsAdapter) }
 
                     newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener{
                         override fun onCardClick(position: Int) {
@@ -110,6 +114,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
                     val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@HomeFragment)
                     recyclerView?.adapter = newsAdapter
 
+                    if (recyclerView != null) {
+                        swipeFunction(recyclerView, newsAdapter)
+                    }
+
                     newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener{
                         override fun onCardClick(position: Int) {
                             val intent = Intent(this@HomeFragment.context, NewsWebView::class.java)
@@ -131,5 +139,62 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
         Handler(Looper.getMainLooper()).postDelayed({
             swipeRefreshLayout?.isRefreshing = false
         }, 3000)
+    }
+
+    private fun swipeFunction(recyclerView: RecyclerView, newsAdapter: NewsAdapter) {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                source: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                newsAdapter.deleteNews(viewHolder)
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                RecyclerViewSwipeDecorator.Builder(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+                    .addBackgroundColor(R.color.red)
+                    .addActionIcon(R.drawable.round_delete_24)
+                    .addSwipeLeftLabel("Delete")
+                    .addCornerRadius(1, 20)
+                    .create()
+                    .decorate()
+
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 }

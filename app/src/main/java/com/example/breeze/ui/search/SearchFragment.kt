@@ -1,6 +1,7 @@
 package com.example.breeze.ui.search
 
 import android.content.Intent
+import android.graphics.Canvas
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,6 +20,7 @@ import com.example.breeze.models.News
 import com.example.breeze.ui.NewsWebView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.Runnable
 import retrofit2.Call
 import retrofit2.Callback
@@ -64,7 +67,6 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
         newsCall.enqueue(object : Callback<News?> {
             override fun onResponse(call: Call<News?>, response: Response<News?>) {
                 val responseBody = response.body()
-                Log.d("SearchFragment", "Response Body: $responseBody")
                 val dataList = responseBody?.data ?: emptyList()
                 if (dataList.isNotEmpty()) {
                     val titleList = dataList.map { it.title }.toMutableList()
@@ -76,7 +78,8 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
                     recyclerView.layoutManager = LinearLayoutManager(context)
                     val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@SearchFragment)
                     recyclerView.adapter = newsAdapter
-                    Log.d("SearchFragment", "RecyclerView adapter updated with new data")
+
+                    swipeFunction(recyclerView, newsAdapter)
 
                     newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener {
                         override fun onCardClick(position: Int) {
@@ -86,7 +89,6 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
                         }
                     })
                 } else {
-                    Log.d("SearchFragment", "No data found for the query")
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.adapter = null
                 }
@@ -119,5 +121,62 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
 
         val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         Handler().postDelayed(Runnable { swipeRefreshLayout?.isRefreshing = false }, 2000)
+    }
+
+    private fun swipeFunction(recyclerView: RecyclerView, newsAdapter: NewsAdapter) {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                source: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                newsAdapter.deleteNews(viewHolder)
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                RecyclerViewSwipeDecorator.Builder(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+                    .addBackgroundColor(R.color.red)
+                    .addActionIcon(R.drawable.round_delete_24)
+                    .addSwipeLeftLabel("Delete")
+                    .addCornerRadius(1, 20)
+                    .create()
+                    .decorate()
+
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 }

@@ -12,10 +12,11 @@ import com.bumptech.glide.Glide
 import com.example.breeze.R
 import com.example.breeze.models.Bookmark
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
-private lateinit var database : DatabaseReference
+lateinit var database : DatabaseReference
 
 class NewsAdapter(var titleList: MutableList<String>,
                   var imageUrlList: MutableList<String>,
@@ -107,6 +108,37 @@ class NewsAdapter(var titleList: MutableList<String>,
 
     override fun getItemCount(): Int {
         return titleList.size
+    }
+
+    fun deleteNews(viewHolder: RecyclerView.ViewHolder) {
+        titleList.removeAt(viewHolder.adapterPosition)
+        imageUrlList.removeAt(viewHolder.adapterPosition)
+        excerptList.removeAt(viewHolder.adapterPosition)
+        urlList.removeAt(viewHolder.adapterPosition)
+        notifyItemRemoved(viewHolder.adapterPosition)
+    }
+
+    fun addBookmark(viewHolder: RecyclerView.ViewHolder, view: View) {
+        isBookmarked(uid, titleList[viewHolder.adapterPosition]) { bookmarked ->
+            if(!bookmarked) {
+                val bookmark = Bookmark(
+                    titleList[viewHolder.adapterPosition],
+                    imageUrlList[viewHolder.adapterPosition],
+                    excerptList[viewHolder.adapterPosition],
+                    urlList[viewHolder.adapterPosition]
+                )
+
+                val title = if(titleList[viewHolder.adapterPosition].contains('.')) {
+                    titleList[viewHolder.adapterPosition].substring(0, titleList[viewHolder.adapterPosition].indexOf('.'))
+                } else {
+                    titleList[viewHolder.adapterPosition]
+                }
+                database.child(uid).child(title).setValue(bookmark)
+                Snackbar.make(view, "Bookamark added!", Snackbar.LENGTH_SHORT).show()
+            } else {
+                Snackbar.make(view, "Bookamark already added!", Snackbar.LENGTH_SHORT).show()
+            }
+        }
     }
 
     class NewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

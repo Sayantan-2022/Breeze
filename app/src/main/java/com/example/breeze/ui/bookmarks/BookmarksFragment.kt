@@ -1,6 +1,7 @@
 package com.example.breeze.ui.bookmarks
 
 import android.content.Intent
+import android.graphics.Canvas
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -20,12 +22,13 @@ import com.example.breeze.ui.NewsWebView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.Runnable
 import retrofit2.Call
 
 class BookmarksFragment : Fragment(R.layout.fragment_bookmarks), SwipeRefreshLayout.OnRefreshListener {
 
-    private lateinit var database : DatabaseReference
+    lateinit var database : DatabaseReference
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,6 +75,8 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks), SwipeRefreshLay
         val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@BookmarksFragment)
         recyclerView.adapter = newsAdapter
 
+        swipeFunction(recyclerView, newsAdapter, titleList)
+
         newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener {
             override fun onCardClick(position: Int) {
                 val intent = Intent(this@BookmarksFragment.context, NewsWebView::class.java)
@@ -116,5 +121,74 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks), SwipeRefreshLay
         Handler().postDelayed(Runnable {
             swipeRefreshLayout?.isRefreshing = false
         }, 1000)
+    }
+
+    private fun swipeFunction(recyclerView: RecyclerView, newsAdapter: NewsAdapter, titleList: MutableList<String>) {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                source: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                newsAdapter.deleteNews(viewHolder)
+
+                val uid = arguments?.getString("uid").toString()
+                database = FirebaseDatabase.getInstance().getReference("Bookmarks")
+
+                val title = if(titleList[viewHolder.absoluteAdapterPosition].contains('.')) {
+                    titleList[viewHolder.absoluteAdapterPosition].substring(0, titleList[viewHolder.absoluteAdapterPosition].indexOf('.'))
+                } else {
+                    titleList[viewHolder.absoluteAdapterPosition]
+                }
+                com.example.breeze.adapter.database.child(uid).child(title).removeValue()
+
+                view?.let { Snackbar.make(it, "Bookmark Deleted!", Snackbar.LENGTH_SHORT).show() }
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                RecyclerViewSwipeDecorator.Builder(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+                    .addBackgroundColor(R.color.red)
+                    .addActionIcon(R.drawable.round_delete_24)
+                    .addSwipeLeftLabel("Delete")
+                    .addCornerRadius(1, 20)
+                    .create()
+                    .decorate()
+
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 }
