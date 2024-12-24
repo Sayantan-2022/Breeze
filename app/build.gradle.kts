@@ -56,5 +56,5 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:21.3.0")
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation("com.github.dhaval2404:imagepicker:2.1")
-
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }
