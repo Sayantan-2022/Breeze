@@ -130,6 +130,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
         val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         Handler(Looper.getMainLooper()).postDelayed({
             swipeRefreshLayout?.isRefreshing = false
-        }, 2000)
+        }, 3000)
     }
 }
