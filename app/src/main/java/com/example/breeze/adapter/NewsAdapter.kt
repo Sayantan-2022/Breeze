@@ -1,6 +1,5 @@
 package com.example.breeze.adapter
 
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,7 @@ class NewsAdapter(var titleList: MutableList<String>,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsAdapter.NewsViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.default_card, parent, false)
-        return NewsViewHolder(itemView, newsListener)
+        return NewsViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
@@ -61,42 +60,52 @@ class NewsAdapter(var titleList: MutableList<String>,
             title = title.substring(0, title.indexOf('.'))
         }
 
-        if(isBookmarked(uid, title)){
-            holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
-        } else {
-            holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
+        isBookmarked(uid, title) { bookmarked ->
+            holder.btnBookmark.setImageResource(
+                if (bookmarked) R.drawable.baseline_bookmark_remove_24
+                else R.drawable.baseline_bookmark_border_24
+            )
         }
 
         holder.btnBookmark.setOnClickListener {
-            if(isBookmarked(uid, titleList[position])){
-                database.child(uid).child(title).removeValue()
-                database.child(uid)
-                holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
-            } else {
-                val bookmark = Bookmark(titleList[position], imageUrlList[position], excerptList[position], urlList[position])
-                database.child(uid).child(title).setValue(bookmark)
-                holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
+            isBookmarked(uid, titleList[position]) { bookmarked ->
+                if (bookmarked) {
+                    database.child(uid).child(title).removeValue()
+                    holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
+                } else {
+                    val bookmark = Bookmark(
+                        titleList[position],
+                        imageUrlList[position],
+                        excerptList[position],
+                        urlList[position]
+                    )
+                    database.child(uid).child(title).setValue(bookmark)
+                    holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
+                }
             }
         }
     }
 
-    private fun isBookmarked(uid : String, title : String): Boolean {
-        database = FirebaseDatabase.getInstance().getReference("Bookmarks")
-        database.child(uid).get().addOnSuccessListener {
-            for(child in it.children){
-                if(child.child("title").value.toString() == title){
-                    return@addOnSuccessListener
+    private fun isBookmarked(uid : String, title : String, callback: (Boolean) -> Unit) {
+        database.child(uid).get().addOnSuccessListener { snapshot ->
+            var bookmarked = false
+            for (child in snapshot.children) {
+                if (child.child("title").value.toString() == title) {
+                    bookmarked = true
+                    break
                 }
             }
+            callback(bookmarked)
+        }.addOnFailureListener {
+            callback(false)
         }
-        return false
     }
 
     override fun getItemCount(): Int {
         return titleList.size
     }
 
-    class NewsViewHolder(itemView: View, listener: onCardClickListener) : RecyclerView.ViewHolder(itemView) {
+    class NewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.tvHeading)
         val image = itemView.findViewById<ShapeableImageView>(R.id.headingImage)
         val excerpt = itemView.findViewById<TextView>(R.id.tvExcerpt)

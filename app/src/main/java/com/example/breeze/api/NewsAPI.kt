@@ -24,11 +24,15 @@ interface NewsAPI {
           page : Int
       ) : Call<News>
 
+    @Headers(
+          "X-RapidAPI-Key: 8693b24f1emsh90fffe384f7064cp1ab6edjsn2303696c045b",
+          "X-RapidAPI-Host: news-api14.p.rapidapi.com"
+    )
       @GET("v2/search/articles")
       fun searchNews(
           @Query("query")
-          query : String,
+          query : String = "sports",
           @Query("language")
-          language: String
+          language: String = "en"
       ) : Call<News>
 }

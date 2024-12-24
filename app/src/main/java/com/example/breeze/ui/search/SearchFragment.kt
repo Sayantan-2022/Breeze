@@ -41,11 +41,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         loadNews(trendingNews, view, uid)
 
         btnSearch.setOnClickListener {
-            val newapi = retrofitBuilder.create(NewsAPI::class.java)
             val searchedQuery = etQuery.text.toString().trim()
             Log.d("SearchFragment", "Search button clicked with query: $searchedQuery")// Get the latest query from the input field
             if (searchedQuery.isNotEmpty()) {
-                val searchedNews = newapi.searchNews(query = searchedQuery, "en")
+                val searchedNews = api.searchNews(searchedQuery, "en")
                 loadNews(searchedNews, view, uid)
             } else {
                 Toast.makeText(this@SearchFragment.context, "Empty Search!", Toast.LENGTH_SHORT).show()
