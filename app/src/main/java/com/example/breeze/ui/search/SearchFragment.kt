@@ -9,6 +9,7 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.breeze.R
 import com.example.breeze.adapter.NewsAdapter
 import com.example.breeze.api.NewsAPI
@@ -25,6 +26,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         val uid = arguments?.getString("uid").toString()
 
         val etQuery = view.findViewById<TextInputEditText>(R.id.etQuery)

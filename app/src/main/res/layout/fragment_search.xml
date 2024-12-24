@@ -38,11 +38,17 @@
                 style="@style/SoftCorner"
                 android:src="@drawable/baseline_search_24" />
         </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:id="@+id/swipeRefreshLayout">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 
 </FrameLayout>
