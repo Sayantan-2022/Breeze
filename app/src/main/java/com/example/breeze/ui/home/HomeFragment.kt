@@ -1,17 +1,15 @@
 package com.example.breeze.ui.home
 
-import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.ProgressBar
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -20,7 +18,6 @@ import com.example.breeze.adapter.NewsAdapter
 import com.example.breeze.api.NewsAPI
 import com.example.breeze.models.News
 import com.example.breeze.ui.NewsWebView
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,6 +31,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view : View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
+        progressBar.visibility = View.VISIBLE
 
         val uid = arguments?.getString("uid").toString()
         val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
@@ -49,6 +49,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
         trendingNews.enqueue(object : Callback<News?> {
             override fun onResponse(call: Call<News?>, response: Response<News?>) {
                 val responseBody = response.body()
+                progressBar.visibility = View.GONE
 
                 val dataList = responseBody?.data ?: emptyList()
 

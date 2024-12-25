@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +34,9 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar2)
+        progressBar.visibility = View.VISIBLE
+
         val uid = arguments?.getString("uid").toString()
         val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
 
@@ -50,6 +54,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
         loadNews(trendingNews, view, uid)
 
         btnSearch.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
             val searchedQuery = etQuery.text.toString().trim()
 
             if (searchedQuery.isNotEmpty()) {
@@ -64,9 +69,12 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
     }
 
     private fun loadNews(newsCall: Call<News>, view: View, uid : String) {
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar2)
+
         newsCall.enqueue(object : Callback<News?> {
             override fun onResponse(call: Call<News?>, response: Response<News?>) {
                 val responseBody = response.body()
+                progressBar.visibility = View.GONE
                 val dataList = responseBody?.data ?: emptyList()
                 if (dataList.isNotEmpty()) {
                     val titleList = dataList.map { it.title }.toMutableList()

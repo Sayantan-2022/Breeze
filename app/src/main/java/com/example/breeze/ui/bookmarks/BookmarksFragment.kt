@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -38,6 +39,9 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar3)
+        progressBar.visibility = View.VISIBLE
 
         val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         val uid = arguments?.getString("uid").toString()
@@ -76,6 +80,9 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                          urlList : MutableList<String>,
                          view : View,
                          uid : String) {
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar3)
+        progressBar.visibility = View.GONE
+
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
         val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@BookmarksFragment, this)
