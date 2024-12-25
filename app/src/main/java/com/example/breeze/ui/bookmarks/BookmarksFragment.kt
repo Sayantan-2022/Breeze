@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -137,7 +138,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                 source: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                TODO("Not yet implemented")
+                return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -148,23 +149,22 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                     Snackbar.make(view ?: return, "Invalid item position!", Snackbar.LENGTH_SHORT).show()
                     return
                 }
-
-                // Delete the news from the adapter
-                newsAdapter.deleteNews(viewHolder)
-
                 // Access the database
                 database = FirebaseDatabase.getInstance().getReference("Bookmarks")
 
-                // Safely get and sanitize the title
-                val title = if (titleList[position].contains('.')) {
-                    titleList[position].substring(0, titleList[position].indexOf('.'))
-                } else {
-                    titleList[position]
-                }
-                val sanitizedTitle = title.replace(".", "").replace("/", "")
+                database.child(uid).get().addOnSuccessListener {
+                    if(it.exists()){
+                        for (valueChild in it.children) {
+                            if (valueChild.child("title").value.toString() == titleList[position]) {
+                                valueChild.ref.removeValue()
+                                viewHolder.itemView.findViewById<ImageButton>(R.id.btnBookmark).setImageResource(R.drawable.baseline_bookmark_border_24)
 
-                // Remove the bookmark from Firebase
-                database.child(uid).child(sanitizedTitle).removeValue()
+                                newsAdapter.bookmarkListener?.onBookmarkRemoved(viewHolder.absoluteAdapterPosition)
+                                break
+                            }
+                        }
+                    }
+                }
 
                 // Show a Snackbar with an Undo option
                 view?.let {

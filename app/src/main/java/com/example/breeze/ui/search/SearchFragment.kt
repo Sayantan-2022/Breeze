@@ -79,8 +79,6 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
                     val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@SearchFragment)
                     recyclerView.adapter = newsAdapter
 
-                    swipeFunction(recyclerView, newsAdapter)
-
                     newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener {
                         override fun onCardClick(position: Int) {
                             val intent = Intent(this@SearchFragment.context, NewsWebView::class.java)
@@ -121,62 +119,5 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
 
         val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         Handler().postDelayed(Runnable { swipeRefreshLayout?.isRefreshing = false }, 2000)
-    }
-
-    private fun swipeFunction(recyclerView: RecyclerView, newsAdapter: NewsAdapter) {
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.LEFT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                source: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                TODO("Not yet implemented")
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                newsAdapter.deleteNews(viewHolder)
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                RecyclerViewSwipeDecorator.Builder(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-                    .addBackgroundColor(R.color.red)
-                    .addActionIcon(R.drawable.round_delete_24)
-                    .addSwipeLeftLabel("Delete")
-                    .addCornerRadius(1, 20)
-                    .create()
-                    .decorate()
-
-                super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-            }
-        })
-
-        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 }
