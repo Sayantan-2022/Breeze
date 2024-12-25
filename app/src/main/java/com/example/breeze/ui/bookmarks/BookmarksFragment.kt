@@ -137,19 +137,38 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks), SwipeRefreshLay
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val uid = arguments?.getString("uid") ?: return // Exit if uid is null
+                val position = viewHolder.absoluteAdapterPosition
+
+                if (position < 0 || position >= titleList.size) {
+                    Snackbar.make(view ?: return, "Invalid item position!", Snackbar.LENGTH_SHORT).show()
+                    return
+                }
+
+                // Delete the news from the adapter
                 newsAdapter.deleteNews(viewHolder)
 
-                val uid = arguments?.getString("uid").toString()
+                // Access the database
                 database = FirebaseDatabase.getInstance().getReference("Bookmarks")
 
-                val title = if(titleList[viewHolder.absoluteAdapterPosition].contains('.')) {
-                    titleList[viewHolder.absoluteAdapterPosition].substring(0, titleList[viewHolder.absoluteAdapterPosition].indexOf('.'))
+                // Safely get and sanitize the title
+                val title = if (titleList[position].contains('.')) {
+                    titleList[position].substring(0, titleList[position].indexOf('.'))
                 } else {
-                    titleList[viewHolder.absoluteAdapterPosition]
+                    titleList[position]
                 }
-                com.example.breeze.adapter.database.child(uid).child(title).removeValue()
+                val sanitizedTitle = title.replace(".", "").replace("/", "")
 
-                view?.let { Snackbar.make(it, "Bookmark Deleted!", Snackbar.LENGTH_SHORT).show() }
+                // Remove the bookmark from Firebase
+                database.child(uid).child(sanitizedTitle).removeValue()
+
+                // Show a Snackbar with an Undo option
+                view?.let {
+                    Snackbar.make(it, "Bookmark Deleted!", Snackbar.LENGTH_SHORT)
+                        .setAction("Undo") {
+                            // Add undo logic if needed
+                        }.show()
+                }
             }
 
             override fun onChildDraw(

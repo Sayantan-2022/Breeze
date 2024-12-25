@@ -15,14 +15,14 @@ import androidx.core.view.WindowInsetsCompat
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 class ProfileActivity : AppCompatActivity() {
 
-    val profileImage = findViewById<ShapeableImageView>(R.id.profileImage)
-    val btnProfile = findViewById<ShapeableImageView>(R.id.btnProfile)
     private lateinit var database: DatabaseReference
+    private  lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,10 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
 
         val uid = intent.getStringExtra("uid").toString()
+        firebaseAuth = FirebaseAuth.getInstance()
 
+        val profileImage = findViewById<ShapeableImageView>(R.id.profileImage)
+        val btnProfile = findViewById<ShapeableImageView>(R.id.btnProfile)
         val btnChangePic = findViewById<FloatingActionButton>(R.id.btnChangePic)
         val tvName = findViewById<TextView>(R.id.tvName)
         val tvEmail = findViewById<TextView>(R.id.tvEmail)
@@ -57,7 +60,9 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         btnLogout.setOnClickListener {
+            firebaseAuth.signOut()
             val intent = Intent(this, SignUp::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
@@ -75,7 +80,11 @@ class ProfileActivity : AppCompatActivity() {
     )
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
+
+        val profileImage = findViewById<ShapeableImageView>(R.id.profileImage)
+        val btnProfile = findViewById<ShapeableImageView>(R.id.btnProfile)
+
+        if(resultCode == Activity.RESULT_OK) {
             val uri: Uri = data?.data!!
             profileImage.setImageURI(uri)
             btnProfile.setImageURI(uri)
