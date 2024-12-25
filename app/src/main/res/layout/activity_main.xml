@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         app:labelVisibilityMode="selected"
         android:id="@+id/bottomNav"
-        android:elevation="100dp"
+        android:focusable="true"
         app:itemTextColor="@color/white"
         android:background="@drawable/nav_backgound"
         app:menu="@menu/items"/>

@@ -59,11 +59,6 @@ class NewsAdapter(var titleList: MutableList<String>,
             newsListener.onCardClick(position)
         }
 
-        var title = titleList[position]
-        if(title.contains('.')) {
-            title = title.substring(0, title.indexOf('.'))
-        }
-
         database.child(uid).get().addOnSuccessListener { snapshot ->
             for (child in snapshot.children) {
                 if (child.child("title").value.toString() == titleList[position]) {
@@ -77,7 +72,16 @@ class NewsAdapter(var titleList: MutableList<String>,
         holder.btnBookmark.setOnClickListener {
             isBookmarked(uid, titleList[position]) { bookmarked ->
                 if (bookmarked) {
-                    database.child(uid).child(title).removeValue()
+                    database.child(uid).get().addOnSuccessListener {
+                        if(it.exists()){
+                            for (valueChild in it.children) {
+                                if (valueChild.child("title").value.toString() == titleList[position]) {
+                                    valueChild.ref.removeValue()
+                                    break
+                                }
+                            }
+                        }
+                    }
                     holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
 
                     bookmarkListener?.onBookmarkRemoved(holder.absoluteAdapterPosition)
@@ -88,7 +92,13 @@ class NewsAdapter(var titleList: MutableList<String>,
                         excerptList[position],
                         urlList[position]
                     )
-                    database.child(uid).child(title).setValue(bookmark)
+
+                    val key = database.child(uid).push().key
+
+                    bookmark.key = key
+                    if (key != null) {
+                        database.child(uid).child(key).setValue(bookmark)
+                    }
                     holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
                 }
             }
