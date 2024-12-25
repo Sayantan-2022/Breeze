@@ -9,9 +9,11 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.breeze.MainActivity
 import com.example.breeze.R
 import com.example.breeze.models.Bookmark
 import com.example.breeze.ui.bookmarks.BookmarksFragment
+import com.example.breeze.ui.bookmarks.NoBookmarkFragment
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DatabaseReference
@@ -77,14 +79,14 @@ class NewsAdapter(var titleList: MutableList<String>,
                             for (valueChild in it.children) {
                                 if (valueChild.child("title").value.toString() == titleList[position]) {
                                     valueChild.ref.removeValue()
+                                    holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
+
+                                    bookmarkListener?.onBookmarkRemoved(holder.absoluteAdapterPosition)
                                     break
                                 }
                             }
                         }
                     }
-                    holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
-
-                    bookmarkListener?.onBookmarkRemoved(holder.absoluteAdapterPosition)
                 } else {
                     val bookmark = Bookmark(
                         titleList[position],
