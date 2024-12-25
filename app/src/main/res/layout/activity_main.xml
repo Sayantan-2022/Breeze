@@ -42,6 +42,7 @@
         android:elevation="16dp"
         android:padding="8dp"
         android:focusable="true"
+        app:cnb_unselectedColor="@color/white"
         android:background="@drawable/nav_backgound"
         app:shapeAppearanceOverlay="@drawable/nav_backgound"
         app:cnb_menuResource="@menu/items"/>
