@@ -1,6 +1,8 @@
 package com.example.breeze
 
 import android.app.Activity
+import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,11 +12,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -23,6 +28,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private lateinit var database: DatabaseReference
     private  lateinit var firebaseAuth: FirebaseAuth
+    lateinit var dialog : Dialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,10 +59,22 @@ class ProfileActivity : AppCompatActivity() {
 
         database.child(uid).get().addOnSuccessListener {
             if (it.exists()) {
-                val imageUri = it.child("imageUri")?.value
-                if(imageUri != null && Uri.parse(imageUri.toString()) != null) {
-                    profileImage.setImageURI(Uri.parse(imageUri.toString()))
-                    btnProfile.setImageURI(Uri.parse(imageUri.toString()))
+                val imageUri = it.child("imageUri").value
+                if(imageUri != null && imageUri.toString().isNotEmpty()) {
+                    Glide.with(this)
+                        .load(imageUri.toString())
+                        .placeholder(R.drawable.blank_profile_picture)
+                        .error(R.drawable.blank_profile_picture)
+                        .into(profileImage)
+
+                    Glide.with(this)
+                        .load(imageUri.toString())
+                        .placeholder(R.drawable.blank_profile_picture)
+                        .error(R.drawable.blank_profile_picture)
+                        .into(btnProfile)
+                } else {
+                    profileImage.setImageResource(R.drawable.blank_profile_picture)
+                    btnProfile.setImageResource(R.drawable.blank_profile_picture)
                 }
             }
         }
@@ -75,6 +93,33 @@ class ProfileActivity : AppCompatActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
+        }
+
+        btnEditName.setOnClickListener {
+            dialog = Dialog(this)
+            dialog.setContentView(R.layout.name_dialog)
+            dialog.window?.setBackgroundDrawable(AppCompatResources.getDrawable(this, R.drawable.dialog_shape))
+            dialog.setCancelable(false)
+
+            dialog.show()
+
+            val btnCancel = dialog.findViewById<Button>(R.id.btnCancel)
+            val btnChange = dialog.findViewById<Button>(R.id.btnChange)
+            val ipNewName = dialog.findViewById<TextInputEditText>(R.id.ipNewName)
+
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            btnChange.setOnClickListener {
+                val name = ipNewName.text.toString()
+                val uid = intent.getStringExtra("uid").toString()
+
+                database = FirebaseDatabase.getInstance().getReference("Accounts")
+                database.child(uid).child("name").setValue(name)
+                tvName.setText("Name : $name")
+                dialog.dismiss()
+            }
         }
     }
 
