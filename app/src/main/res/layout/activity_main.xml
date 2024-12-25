@@ -41,8 +41,9 @@
         app:labelVisibilityMode="selected"
         android:id="@+id/bottomNav"
         android:focusable="true"
-        app:itemTextColor="@color/white"
+        app:itemRippleColor="@color/lavender"
         android:background="@drawable/nav_backgound"
+        app:shapeAppearanceOverlay="@drawable/nav_backgound"
         app:menu="@menu/items"/>
 
 </LinearLayout>
