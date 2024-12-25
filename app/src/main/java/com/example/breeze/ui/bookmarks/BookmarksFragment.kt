@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.breeze.MainActivity
 import com.example.breeze.R
+import com.example.breeze.adapter.BookmarkListener
 import com.example.breeze.adapter.NewsAdapter
 import com.example.breeze.models.News
 import com.example.breeze.ui.NewsWebView
@@ -26,7 +27,10 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.Runnable
 import retrofit2.Call
 
-class BookmarksFragment : Fragment(R.layout.fragment_bookmarks), SwipeRefreshLayout.OnRefreshListener {
+class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
+    SwipeRefreshLayout.OnRefreshListener,
+        BookmarkListener
+{
 
     lateinit var database : DatabaseReference
 
@@ -72,7 +76,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks), SwipeRefreshLay
                          uid : String) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@BookmarksFragment)
+        val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@BookmarksFragment, this)
         recyclerView.adapter = newsAdapter
 
         swipeFunction(recyclerView, newsAdapter, titleList)
@@ -209,5 +213,30 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks), SwipeRefreshLay
         })
 
         itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    override fun onBookmarkRemoved(position: Int) {
+        database = FirebaseDatabase.getInstance().getReference("Bookmarks")
+        val uid = arguments?.getString("uid").toString()
+
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerView)
+        val adapter = recyclerView?.adapter as? NewsAdapter
+
+        adapter?.let {
+            it.titleList.removeAt(position)
+            it.imageUrlList.removeAt(position)
+            it.excerptList.removeAt(position)
+            it.urlList.removeAt(position)
+            it.notifyItemRemoved(position)
+        }
+
+        Snackbar.make(requireView(), "Bookmark removed!", Snackbar.LENGTH_SHORT).show()
+
+        database.child(uid).get().addOnSuccessListener {
+            if (!it.exists()) {
+                val mainActivity = activity as MainActivity
+                mainActivity.replaceFragment(NoBookmarkFragment(), uid)
+            }
+        }
     }
 }

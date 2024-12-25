@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.breeze.R
 import com.example.breeze.models.Bookmark
+import com.example.breeze.ui.bookmarks.BookmarksFragment
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DatabaseReference
@@ -23,7 +24,8 @@ class NewsAdapter(var titleList: MutableList<String>,
                   var excerptList: MutableList<String>,
                   val urlList: MutableList<String>,
                   val uid : String,
-                  val context: Fragment)
+                  val context: Fragment,
+                  private val bookmarkListener: BookmarkListener? = null)
     : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
     private lateinit var newsListener: onCardClickListener
@@ -77,6 +79,8 @@ class NewsAdapter(var titleList: MutableList<String>,
                 if (bookmarked) {
                     database.child(uid).child(title).removeValue()
                     holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
+
+                    bookmarkListener?.onBookmarkRemoved(holder.absoluteAdapterPosition)
                 } else {
                     val bookmark = Bookmark(
                         titleList[position],
