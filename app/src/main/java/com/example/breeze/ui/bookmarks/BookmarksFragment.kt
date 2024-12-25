@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -184,21 +185,25 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                 actionState: Int,
                 isCurrentlyActive: Boolean
             ) {
-                RecyclerViewSwipeDecorator.Builder(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-                    .addBackgroundColor(R.color.red)
-                    .addActionIcon(R.drawable.round_delete_24)
-                    .addSwipeLeftLabel("Delete")
-                    .addCornerRadius(1, 20)
-                    .create()
-                    .decorate()
+                this@BookmarksFragment.context?.let { ContextCompat.getColor(it, R.color.red)}?.let {
+                    RecyclerViewSwipeDecorator.Builder(
+                        c,
+                        recyclerView,
+                        viewHolder,
+                        dX,
+                        dY,
+                        actionState,
+                        isCurrentlyActive
+                    )
+                        .addBackgroundColor(it)
+                        .addActionIcon(R.drawable.round_delete_24)
+                        .addSwipeLeftLabel("Delete")
+                        .setSwipeLeftLabelTextSize(1, 16F)
+                        .setSwipeLeftLabelColor(ContextCompat.getColor(this@BookmarksFragment.requireContext(), R.color.white))
+                        .addCornerRadius(1, 20)
+                        .create()
+                        .decorate()
+                }
 
                 super.onChildDraw(
                     c,
