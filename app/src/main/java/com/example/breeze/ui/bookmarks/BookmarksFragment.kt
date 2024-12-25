@@ -228,6 +228,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
             it.excerptList.removeAt(position)
             it.urlList.removeAt(position)
             it.notifyItemRemoved(position)
+            it.notifyItemRangeChanged(position, it.itemCount)
         }
 
         Snackbar.make(requireView(), "Bookmark removed!", Snackbar.LENGTH_SHORT).show()
