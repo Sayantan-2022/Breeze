@@ -51,6 +51,16 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
+        database.child(uid).get().addOnSuccessListener {
+            if (it.exists()) {
+                val imageUri = it.child("imageUri")?.value
+                if(imageUri != null && Uri.parse(imageUri.toString()) != null) {
+                    profileImage.setImageURI(Uri.parse(imageUri.toString()))
+                    btnProfile.setImageURI(Uri.parse(imageUri.toString()))
+                }
+            }
+        }
+
         btnChangePic.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
@@ -81,11 +91,16 @@ class ProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        val uid = intent.getStringExtra("uid").toString()
         val profileImage = findViewById<ShapeableImageView>(R.id.profileImage)
         val btnProfile = findViewById<ShapeableImageView>(R.id.btnProfile)
 
         if(resultCode == Activity.RESULT_OK) {
             val uri: Uri = data?.data!!
+
+            database = FirebaseDatabase.getInstance().getReference("Accounts").child(uid)
+            database.child("imageUri").setValue(uri.toString())
+
             profileImage.setImageURI(uri)
             btnProfile.setImageURI(uri)
         } else if (resultCode == ImagePicker.RESULT_ERROR) {

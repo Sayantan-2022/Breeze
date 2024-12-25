@@ -1,6 +1,7 @@
 package com.example.breeze
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
@@ -15,9 +16,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var database: DatabaseReference
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +46,17 @@ class MainActivity : AppCompatActivity() {
                 else -> {}
             }
             true
+        }
+
+        database = FirebaseDatabase.getInstance().getReference("Accounts")
+        database.child(uid).get().addOnSuccessListener {
+            if (it.exists()) {
+                val imageUri = it.child("imageUri")?.value
+                if (imageUri != null && Uri.parse(imageUri.toString()) != null)
+                    btnProfile.setImageURI(Uri.parse(imageUri.toString()))
+                else
+                    btnProfile.setImageResource(R.drawable.blank_profile_picture)
+            }
         }
 
         btnProfile.setOnClickListener {

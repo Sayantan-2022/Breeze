@@ -22,6 +22,7 @@
             android:layout_marginRight="40dp"
             app:strokeColor="@color/lavender"
             app:strokeWidth="3dp"
+            android:padding="2dp"
             app:shapeAppearanceOverlay="@style/circular"
             app:srcCompat="@drawable/blank_profile_picture" />
     </androidx.cardview.widget.CardView>
