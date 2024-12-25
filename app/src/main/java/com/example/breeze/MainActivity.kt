@@ -19,6 +19,7 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.ismaeldivita.chipnavigation.ChipNavigationBar
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,19 +35,17 @@ class MainActivity : AppCompatActivity() {
 
         val uid = firebaseAuth.currentUser?.uid.toString()
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        val bottomNav = findViewById<ChipNavigationBar>(R.id.bottomNav)
         val btnProfile = findViewById<ShapeableImageView>(R.id.btnProfile)
 
         replaceFragment(HomeFragment(), uid)
 
         bottomNav.setOnItemSelectedListener {
-            when(it.itemId){
+            when (it) {
                 R.id.home -> replaceFragment(HomeFragment(), uid)
                 R.id.search -> replaceFragment(SearchFragment(), uid)
                 R.id.bookmarks -> replaceFragment(BookmarksFragment(), uid)
-                else -> {}
             }
-            true
         }
 
         database = FirebaseDatabase.getInstance().getReference("Accounts")

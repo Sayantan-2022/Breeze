@@ -35,15 +35,15 @@
         android:layout_weight="1">
     </FrameLayout>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <com.ismaeldivita.chipnavigation.ChipNavigationBar
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:labelVisibilityMode="selected"
+        android:layout_height="72dp"
         android:id="@+id/bottomNav"
+        android:elevation="16dp"
+        android:padding="8dp"
         android:focusable="true"
-        app:itemRippleColor="@color/lavender"
         android:background="@drawable/nav_backgound"
         app:shapeAppearanceOverlay="@drawable/nav_backgound"
-        app:menu="@menu/items"/>
+        app:cnb_menuResource="@menu/items"/>
 
 </LinearLayout>
