@@ -4,8 +4,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -14,6 +16,7 @@ import com.example.breeze.R
 import com.example.breeze.models.Bookmark
 import com.example.breeze.ui.bookmarks.BookmarksFragment
 import com.example.breeze.ui.bookmarks.NoBookmarkFragment
+import com.google.android.material.animation.AnimationUtils
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DatabaseReference
@@ -61,6 +64,8 @@ class NewsAdapter(var titleList: MutableList<String>,
             newsListener.onCardClick(position)
         }
 
+        holder.defaultCard.startAnimation(android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), R.anim.default_anim))
+
         database.child(uid).get().addOnSuccessListener { snapshot ->
             for (child in snapshot.children) {
                 if (child.child("title").value.toString() == titleList[position]) {
@@ -74,12 +79,12 @@ class NewsAdapter(var titleList: MutableList<String>,
         holder.btnBookmark.setOnClickListener {
             isBookmarked(uid, titleList[position]) { bookmarked ->
                 if (bookmarked) {
+                    holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
                     database.child(uid).get().addOnSuccessListener {
                         if(it.exists()){
                             for (valueChild in it.children) {
                                 if (valueChild.child("title").value.toString() == titleList[position]) {
                                     valueChild.ref.removeValue()
-                                    holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_border_24)
 
                                     bookmarkListener?.onBookmarkRemoved(holder.absoluteAdapterPosition)
                                     break
@@ -88,6 +93,8 @@ class NewsAdapter(var titleList: MutableList<String>,
                         }
                     }
                 } else {
+                    holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
+
                     val bookmark = Bookmark(
                         titleList[position],
                         imageUrlList[position],
@@ -101,7 +108,6 @@ class NewsAdapter(var titleList: MutableList<String>,
                     if (key != null) {
                         database.child(uid).child(key).setValue(bookmark)
                     }
-                    holder.btnBookmark.setImageResource(R.drawable.baseline_bookmark_remove_24)
                 }
             }
         }
@@ -131,5 +137,6 @@ class NewsAdapter(var titleList: MutableList<String>,
         val image = itemView.findViewById<ShapeableImageView>(R.id.headingImage)
         val excerpt = itemView.findViewById<TextView>(R.id.tvExcerpt)
         val btnBookmark = itemView.findViewById<ImageButton>(R.id.btnBookmark)
+        val defaultCard = itemView.findViewById<CardView>(R.id.defaultCard)
     }
 }
