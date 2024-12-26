@@ -71,6 +71,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
                         override fun onCardClick(position: Int) {
                             val intent = Intent(this@HomeFragment.context, NewsWebView::class.java)
                             intent.putExtra("url", urlList[position])
+                            intent.putExtra("uid", uid)
                             startActivity(intent)
                         }
                     })
@@ -122,6 +123,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
                         override fun onCardClick(position: Int) {
                             val intent = Intent(this@HomeFragment.context, NewsWebView::class.java)
                             intent.putExtra("url", urlList[position])
+                            intent.putExtra("uid", uid)
                             startActivity(intent)
                         }
                     })

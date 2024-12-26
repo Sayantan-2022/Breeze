@@ -93,6 +93,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
                         override fun onCardClick(position: Int) {
                             val intent = Intent(this@SearchFragment.context, NewsWebView::class.java)
                             intent.putExtra("url", urlList[position])
+                            intent.putExtra("uid", uid)
                             startActivity(intent)
                         }
                     })

@@ -100,6 +100,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
             override fun onCardClick(position: Int) {
                 val intent = Intent(this@BookmarksFragment.context, NewsWebView::class.java)
                 intent.putExtra("url", urlList[position])
+                intent.putExtra("uid", uid)
                 startActivity(intent)
             }
         })
