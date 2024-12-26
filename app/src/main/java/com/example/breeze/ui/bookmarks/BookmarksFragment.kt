@@ -50,6 +50,8 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
         val imageUrlList = mutableListOf<String>()
         val excerptList = mutableListOf<String>()
         val urlList = mutableListOf<String>()
+        val publisherName = mutableListOf<String>()
+        val publisherIcon = mutableListOf<String>()
 
         database = FirebaseDatabase.getInstance().getReference("Bookmarks")
 
@@ -60,9 +62,11 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                     imageUrlList.add(child.child("imageUrl").value.toString())
                     excerptList.add(child.child("excerpt").value.toString())
                     urlList.add(child.child("url").value.toString())
+                    publisherName.add(child.child("publisherName").value.toString())
+                    publisherIcon.add(child.child("publisherIcon").value.toString())
                 }
 
-                loadNews(titleList, imageUrlList, excerptList, urlList, view, uid)
+                loadNews(titleList, imageUrlList, excerptList, urlList, publisherName, publisherIcon, view, uid)
             } else {
                 (activity as MainActivity).replaceFragment(NoBookmarkFragment(), uid)
                 Snackbar.make(view, "No Bookmarks found!", Snackbar.LENGTH_SHORT).show()
@@ -78,6 +82,8 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                          imageUrlList : MutableList<String>,
                          excerptList : MutableList<String>,
                          urlList : MutableList<String>,
+                         publisherName : MutableList<String>,
+                         publisherIcon : MutableList<String>,
                          view : View,
                          uid : String) {
         val progressBar = view.findViewById<ProgressBar>(R.id.progressBar3)
@@ -85,7 +91,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@BookmarksFragment, this)
+        val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, publisherName, publisherIcon, uid, this@BookmarksFragment, this)
         recyclerView.adapter = newsAdapter
 
         swipeFunction(recyclerView, newsAdapter, titleList)
@@ -106,6 +112,8 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
         val imageUrlList = mutableListOf<String>()
         val excerptList = mutableListOf<String>()
         val urlList = mutableListOf<String>()
+        val publisherName = mutableListOf<String>()
+        val publisherIcon = mutableListOf<String>()
 
         database = FirebaseDatabase.getInstance().getReference("Bookmarks")
 
@@ -116,10 +124,12 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                     imageUrlList.add(child.child("imageUrl").value.toString())
                     excerptList.add(child.child("excerpt").value.toString())
                     urlList.add(child.child("url").value.toString())
+                    publisherName.add(child.child("publisherName").value.toString())
+                    publisherIcon.add(child.child("publisherIcon").value.toString())
                 }
 
                 view?.let { it1 ->
-                    loadNews(titleList, imageUrlList, excerptList, urlList,
+                    loadNews(titleList, imageUrlList, excerptList, urlList, publisherName, publisherIcon,
                         it1, uid)
                 }
             } else {

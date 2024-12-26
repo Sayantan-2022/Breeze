@@ -17,6 +17,7 @@ import com.example.breeze.R
 import com.example.breeze.adapter.NewsAdapter
 import com.example.breeze.api.NewsAPI
 import com.example.breeze.models.News
+import com.example.breeze.models.Publisher
 import com.example.breeze.ui.NewsWebView
 import retrofit2.Call
 import retrofit2.Callback
@@ -58,10 +59,12 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
                     val imageUrlList = dataList.map { it.thumbnail }.toMutableList()
                     val urlList = dataList.map { it.url }.toMutableList()
                     val excerptList = dataList.map { it.excerpt }.toMutableList()
+                    val publisherName = dataList.map { it.publisher.name }.toMutableList()
+                    val publisherIcon = dataList.map { it.publisher.favicon }.toMutableList()
 
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(context)
-                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@HomeFragment)
+                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, publisherName, publisherIcon, uid, this@HomeFragment)
                     recyclerView.adapter = newsAdapter
 
                     newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener{
@@ -107,10 +110,12 @@ class HomeFragment : Fragment(R.layout.fragment_home), SwipeRefreshLayout.OnRefr
                     val imageUrlList = dataList.map { it.thumbnail }.toMutableList()
                     val urlList = dataList.map { it.url }.toMutableList()
                     val excerptList = dataList.map { it.excerpt }.toMutableList()
+                    val publisherName = dataList.map { it.publisher.name }.toMutableList()
+                    val publisherIcon = dataList.map { it.publisher.favicon }.toMutableList()
 
                     val recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView?.layoutManager = LinearLayoutManager(context)
-                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@HomeFragment)
+                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, publisherName, publisherIcon, uid, this@HomeFragment)
                     recyclerView?.adapter = newsAdapter
 
                     newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener{

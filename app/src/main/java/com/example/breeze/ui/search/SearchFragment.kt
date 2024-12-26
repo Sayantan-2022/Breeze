@@ -81,10 +81,12 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
                     val imageUrlList = dataList.map { it.thumbnail }.toMutableList()
                     val urlList = dataList.map { it.url }.toMutableList()
                     val excerptList = dataList.map { it.excerpt }.toMutableList()
+                    val publisherName = dataList.map { it.publisher.name }.toMutableList()
+                    val publisherIcon = dataList.map { it.publisher.favicon }.toMutableList()
 
                     val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(context)
-                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, uid, this@SearchFragment)
+                    val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, publisherName, publisherIcon, uid, this@SearchFragment)
                     recyclerView.adapter = newsAdapter
 
                     newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener {

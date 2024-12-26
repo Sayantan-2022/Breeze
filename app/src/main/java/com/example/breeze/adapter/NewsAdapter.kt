@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
@@ -14,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.example.breeze.MainActivity
 import com.example.breeze.R
 import com.example.breeze.models.Bookmark
+import com.example.breeze.models.Publisher
 import com.example.breeze.ui.bookmarks.BookmarksFragment
 import com.example.breeze.ui.bookmarks.NoBookmarkFragment
 import com.google.android.material.animation.AnimationUtils
@@ -28,6 +30,8 @@ class NewsAdapter(var titleList: MutableList<String>,
                   var imageUrlList: MutableList<String>,
                   var excerptList: MutableList<String>,
                   val urlList: MutableList<String>,
+                  val publisherName: MutableList<String>,
+                  val publisherIcon: MutableList<String>,
                   val uid : String,
                   val context: Fragment,
                   val bookmarkListener: BookmarkListener? = null)
@@ -59,11 +63,19 @@ class NewsAdapter(var titleList: MutableList<String>,
             .error(R.drawable.baseline_error_outline_24)
             .into(holder.image)
         holder.excerpt.text=excerptList[position]
+        holder.publisherName.text=publisherName[position]
+        Glide.with(context)
+            .load(publisherIcon[position])
+            .fitCenter()
+            .placeholder(R.drawable.baseline_downloading_24)
+            .error(R.drawable.baseline_error_outline_24)
+            .into(holder.publisherIcon)
 
         holder.itemView.setOnClickListener{
             newsListener.onCardClick(position)
         }
 
+        if(bookmarkListener == null)
         holder.defaultCard.startAnimation(android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), R.anim.default_anim))
 
         database.child(uid).get().addOnSuccessListener { snapshot ->
@@ -99,7 +111,9 @@ class NewsAdapter(var titleList: MutableList<String>,
                         titleList[position],
                         imageUrlList[position],
                         excerptList[position],
-                        urlList[position]
+                        urlList[position],
+                        publisherName[position],
+                        publisherIcon[position]
                     )
 
                     val key = database.child(uid).push().key
@@ -138,5 +152,7 @@ class NewsAdapter(var titleList: MutableList<String>,
         val excerpt = itemView.findViewById<TextView>(R.id.tvExcerpt)
         val btnBookmark = itemView.findViewById<ImageButton>(R.id.btnBookmark)
         val defaultCard = itemView.findViewById<CardView>(R.id.defaultCard)
+        val publisherName = itemView.findViewById<TextView>(R.id.tvPublisher)
+        val publisherIcon = itemView.findViewById<ImageView>(R.id.publisherImage)
     }
 }

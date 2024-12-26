@@ -23,6 +23,33 @@
             app:shapeAppearanceOverlay="@style/SoftCorner"
             app:srcCompat="@drawable/baseline_360_24"/>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginBottom="9dp">
+
+            <ImageView
+                android:id="@+id/publisherImage"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="bottom"
+                android:scaleType="centerCrop"
+                android:layout_marginEnd="4dp"
+                app:srcCompat="@drawable/baseline_360_24"/>
+
+            <TextView
+                android:id="@+id/tvPublisher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="10sp"
+                android:text="TextView" />
+
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tvHeading"
             android:layout_width="match_parent"
@@ -37,7 +64,7 @@
             android:id="@+id/tvExcerpt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="5dp"
             android:textSize="12sp"
             android:layout_marginBottom="5dp"
             android:textStyle="italic"
@@ -46,15 +73,15 @@
 
             <ImageButton
                 android:id="@+id/btnBookmark"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="end"
                 android:background="@android:color/transparent"
                 android:clickable="true"
                 android:contentDescription="Add bookmark"
                 android:focusable="true"
-                android:layout_marginBottom="5dp"
-                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="10dp"
                 app:srcCompat="@drawable/baseline_bookmark_border_24" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
