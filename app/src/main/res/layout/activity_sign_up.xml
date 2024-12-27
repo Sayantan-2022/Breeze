@@ -85,6 +85,7 @@
             android:textSize="16sp"
             android:textColor="@color/blue"
             android:text="@string/already_reg" />
+
     </LinearLayout>
 
 </LinearLayout>
