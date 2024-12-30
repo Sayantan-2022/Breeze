@@ -8,65 +8,82 @@
     android:orientation="vertical"
     tools:context=".SignIn">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="30dp"
-        android:orientation="vertical"
-        tools:ignore="UselessParent">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            app:startIconDrawable="@drawable/baseline_email_24"
-            app:boxCornerRadiusBottomEnd="30dp">
+            android:layout_margin="30dp"
+            android:background="@drawable/sign_in_style"
+            android:orientation="vertical"
+            android:elevation="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="UselessParent">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ipEmail"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email"
-                tools:ignore="HardcodedText" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                app:boxCornerRadiusBottomEnd="30dp"
+                app:startIconDrawable="@drawable/baseline_email_24">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            app:boxCornerRadiusBottomEnd="30dp"
-            app:endIconMode="password_toggle"
-            app:startIconDrawable="@drawable/baseline_password_24">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ipEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email"
+                    tools:ignore="HardcodedText" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ipPassword"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
+                android:layout_marginHorizontal="10dp"
+                android:padding="5dp"
+                app:boxCornerRadiusBottomEnd="30dp"
+                app:endIconMode="password_toggle"
+                app:startIconDrawable="@drawable/baseline_password_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ipPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    tools:ignore="HardcodedText" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/tvForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/forgot_pass"
+                android:textColor="@color/blue"
+                tools:ignore="RtlHardcoded" />
+
+            <Button
+                android:id="@+id/btnSignIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/dark_blue"
+                android:text="Sign In"
+                android:textColor="@color/orange"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 tools:ignore="HardcodedText" />
-        </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/tvForgotPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="right"
-            android:textColor="@color/blue"
-            android:text="@string/forgot_pass"
-            tools:ignore="RtlHardcoded" />
-
-        <Button
-            android:id="@+id/btnSignIn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20sp"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/green"
-            android:fontFamily="@font/cavolini"
-            android:textStyle="bold"
-            android:text="Sign In"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
