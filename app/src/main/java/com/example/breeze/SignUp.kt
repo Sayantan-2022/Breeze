@@ -24,7 +24,6 @@ class SignUp : AppCompatActivity() {
         setContentView(R.layout.activity_sign_up)
 
         val btnSignUp = findViewById<Button>(R.id.btnSignUp)
-        val tvSignIn = findViewById<TextView>(R.id.tvSignIn)
 
         val etName = findViewById<TextInputEditText>(R.id.ipName)
         val etEmail = findViewById<TextInputEditText>(R.id.ipEmail)
@@ -52,9 +51,8 @@ class SignUp : AppCompatActivity() {
                                 val intent = Intent(this, MainActivity::class.java)
                                 intent.putExtra("uid", uid)
                                 startActivity(intent)
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                                 finish()
-                            } else {
-
                             }
                         }
                 } catch (e : Error){
@@ -64,12 +62,6 @@ class SignUp : AppCompatActivity() {
                     ).show()
                 }
             } else Toast.makeText(this, "Please all fields!", Toast.LENGTH_SHORT).show()
-        }
-
-        tvSignIn.setOnClickListener {
-            val intent = Intent(this, SignIn::class.java)
-            startActivity(intent)
-            finish()
         }
     }
 }

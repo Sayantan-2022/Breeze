@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase
 
 class SignIn : AppCompatActivity() {
 
-    lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +45,7 @@ class SignIn : AppCompatActivity() {
         tvForgotPassword.setOnClickListener {
             val intent = Intent(this, ForgotPassword::class.java)
             startActivity(intent)
-            finish()
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
 
@@ -62,6 +62,7 @@ class SignIn : AppCompatActivity() {
                     val intent = Intent(this, MainActivity::class.java)
                     intent.putExtra("uid", uid)
                     startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                     finish()
                 } else {
                     Toast.makeText(this, "Invalid Email or Password!", Toast.LENGTH_SHORT).show()

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.Window
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -32,8 +33,11 @@ class ProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_profile)
+
+        val window : Window = window
+        window.statusBarColor = getColor(R.color.dark_blue)
+        window.navigationBarColor = getColor(R.color.white)
 
         val uid = intent.getStringExtra("uid").toString()
         firebaseAuth = FirebaseAuth.getInstance()
@@ -89,9 +93,10 @@ class ProfileActivity : AppCompatActivity() {
 
         btnLogout.setOnClickListener {
             firebaseAuth.signOut()
-            val intent = Intent(this, SignUp::class.java)
+            val intent = Intent(this, WelcomeScreen::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right)
             finish()
         }
 

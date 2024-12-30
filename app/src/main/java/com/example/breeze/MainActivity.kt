@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         val window : Window = window
         window.statusBarColor = getColor(R.color.dark_blue)
+        window.navigationBarColor = getColor(R.color.dark_blue)
 
         firebaseAuth = FirebaseAuth.getInstance()
 
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, ProfileActivity::class.java)
             intent.putExtra("uid", uid)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
 

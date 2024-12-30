@@ -3,6 +3,7 @@ package com.example.breeze.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.Window
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.enableEdgeToEdge
@@ -21,8 +22,11 @@ class NewsWebView : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled", "NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_news_web_view)
+
+        val window : Window = window
+        window.statusBarColor = getColor(R.color.dark_blue)
+        window.navigationBarColor = getColor(R.color.dark_blue)
 
         val uid = intent.getStringExtra("uid")
         val url = intent.getStringExtra("url")

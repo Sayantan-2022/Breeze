@@ -38,12 +38,14 @@ class WelcomeScreen : AppCompatActivity() {
         btnCreate.setOnClickListener {
             val intent = Intent(this, SignUp::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             finish()
         }
 
         btnLogin.setOnClickListener {
             val intent = Intent(this, SignIn::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             finish()
         }
     }

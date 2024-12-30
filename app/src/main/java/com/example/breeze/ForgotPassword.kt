@@ -14,7 +14,6 @@ import com.google.firebase.database.FirebaseDatabase
 
 class ForgotPassword : AppCompatActivity() {
 
-    private lateinit var database : DatabaseReference
     private var firebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +36,7 @@ class ForgotPassword : AppCompatActivity() {
                             Toast.makeText(this, "Password reset link sent to your email!", Toast.LENGTH_SHORT).show()
                             val intent = Intent(this, SignIn::class.java)
                             startActivity(intent)
+                            overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right)
                             finish()
                         } else {
                             Toast.makeText(this, "Something went wrong!", Toast.LENGTH_SHORT).show()
@@ -44,31 +44,6 @@ class ForgotPassword : AppCompatActivity() {
                     }
             } else {
                 Toast.makeText(this, "Please enter a valid Email ID!", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun updateData(username : String?, newPassword: String?){
-        database = FirebaseDatabase.getInstance().getReference("Accounts")
-        if(username != null) {
-            database.child(username).get().addOnSuccessListener {
-                if (it.exists()) {
-                    val email = it.child("email").value.toString()
-                    val name = it.child("name").value.toString()
-
-                    val map = mapOf("email" to email, "name" to name, "password" to newPassword, "username" to username)
-                    database.child(username).updateChildren(map)
-
-                    Toast.makeText(this, "Password updated successfully!", Toast.LENGTH_SHORT).show()
-
-                    val intent = Intent(this, SignIn::class.java)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this, "User does not exist!", Toast.LENGTH_SHORT).show()
-                }
-            }.addOnFailureListener {
-                Toast.makeText(this, "Failed to fetch data!", Toast.LENGTH_SHORT).show()
             }
         }
     }
