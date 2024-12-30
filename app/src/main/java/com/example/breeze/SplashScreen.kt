@@ -21,11 +21,9 @@ class SplashScreen : AppCompatActivity() {
 
         Handler().postDelayed({
             if (firebaseAuth.currentUser != null) {
-                // User is already signed in, navigate to MainActivity
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             } else {
-                // User is not signed in, navigate to SignUp
                 val intent = Intent(this, WelcomeScreen::class.java)
                 startActivity(intent)
             }

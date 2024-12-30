@@ -3,6 +3,7 @@ package com.example.breeze
 import android.content.Intent
 import android.os.Bundle
 import android.view.Window
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -72,6 +73,38 @@ class MainActivity : AppCompatActivity() {
         val bundle = Bundle()
         bundle.putString("uid", uid)
         fragment.arguments = bundle
+
+        val tvView = findViewById<TextView>(R.id.tvView)
+        val stringBuilder = StringBuilder()
+        if (fragment is SearchFragment) {
+            tvView.textSize = 25F
+            Thread{
+                for (letter in "Search for News") {
+                    stringBuilder.append(letter)
+                    Thread.sleep(100)
+                    runOnUiThread {
+                        tvView.text = stringBuilder.toString()
+                    }
+
+                }
+            }.start()
+        }else if (fragment is BookmarksFragment) {
+            tvView.textSize = 25F
+            Thread{
+                for (letter in "Bookmarks") {
+                    stringBuilder.append(letter)
+                    Thread.sleep(100)
+                    runOnUiThread {
+                        tvView.text = stringBuilder.toString()
+                    }
+
+                }
+            }.start()
+        }
+        else {
+            tvView.textSize = 40F
+            tvView.text = "Breeze"
+        }
 
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()

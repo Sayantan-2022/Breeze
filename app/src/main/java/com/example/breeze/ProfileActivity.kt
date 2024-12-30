@@ -49,6 +49,19 @@ class ProfileActivity : AppCompatActivity() {
         val tvEmail = findViewById<TextView>(R.id.tvEmail)
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         val btnEditName = findViewById<ImageButton>(R.id.btnEditName)
+        val tvView = findViewById<TextView>(R.id.tvView)
+
+        val stringBuilder = StringBuilder()
+        Thread{
+            for (letter in "Profile") {
+                stringBuilder.append(letter)
+                Thread.sleep(150)
+                runOnUiThread {
+                    tvView.text = stringBuilder.toString()
+                }
+
+            }
+        }.start()
 
         database = FirebaseDatabase.getInstance().getReference("Accounts")
         database.child(uid).get().addOnSuccessListener {
@@ -96,7 +109,6 @@ class ProfileActivity : AppCompatActivity() {
             val intent = Intent(this, WelcomeScreen::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
-            overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right)
             finish()
         }
 

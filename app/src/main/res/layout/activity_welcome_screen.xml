@@ -25,6 +25,19 @@
         android:layout_height="match_parent"
         android:layout_marginHorizontal="20dp">
 
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            android:text="Your everyday news at one place!"
+            android:textColor="@color/dark_blue"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/btnCreate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <Button
             android:id="@+id/btnCreate"
             android:layout_width="match_parent"
