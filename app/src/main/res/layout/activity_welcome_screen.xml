@@ -31,14 +31,14 @@
             android:layout_height="60dp"
             android:layout_marginBottom="5dp"
             android:backgroundTint="@color/orange"
-            app:strokeColor="@color/dark_blue"
-            app:strokeWidth="3dp"
             android:text="Create your Account"
-            android:textSize="19sp"
             android:textColor="@color/dark_blue"
+            android:textSize="19sp"
             app:layout_constraintBottom_toTopOf="@+id/btnLogin"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:strokeColor="@color/dark_blue"
+            app:strokeWidth="3dp" />
 
         <Button
             android:id="@+id/btnLogin"
@@ -47,10 +47,11 @@
             android:layout_marginBottom="50dp"
             android:backgroundTint="@color/dark_blue"
             android:text="Log in"
-            android:textSize="19sp"
             android:textColor="@color/orange"
+            android:textSize="19sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

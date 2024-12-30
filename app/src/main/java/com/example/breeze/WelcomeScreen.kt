@@ -1,6 +1,9 @@
 package com.example.breeze
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Window
+import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +15,12 @@ class WelcomeScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome_screen)
 
+        val window : Window = window
+        window.statusBarColor = getColor(R.color.welcome)
+
         val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
+        val btnCreate = findViewById<Button>(R.id.btnCreate)
+        val btnLogin = findViewById<Button>(R.id.btnLogin)
         val label = "Welcome to,\nBreeze"
         val stringBuilder = StringBuilder()
 
@@ -26,5 +34,17 @@ class WelcomeScreen : AppCompatActivity() {
 
             }
         }.start()
+
+        btnCreate.setOnClickListener {
+            val intent = Intent(this, SignUp::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        btnLogin.setOnClickListener {
+            val intent = Intent(this, SignIn::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }
