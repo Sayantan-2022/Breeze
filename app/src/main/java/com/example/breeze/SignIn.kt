@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.breeze.util.InternetChecker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -25,6 +26,8 @@ class SignIn : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_sign_in)
+
+        InternetChecker().checkInternet(this, lifecycle)
 
         val btnSignIn = findViewById<Button>(R.id.btnSignIn)
         val etEmail = findViewById<TextInputEditText>(R.id.ipEmail)

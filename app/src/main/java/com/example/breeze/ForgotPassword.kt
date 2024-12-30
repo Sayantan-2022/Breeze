@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.example.breeze.util.InternetChecker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -20,6 +21,8 @@ class ForgotPassword : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_forgot_password)
+
+        InternetChecker().checkInternet(this, lifecycle)
 
         val btnChangePassword = findViewById<Button>(R.id.btnChangePassword)
         val etEmail = findViewById<TextInputEditText>(R.id.ipEmail)

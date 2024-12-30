@@ -59,4 +59,6 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("it.xabaras.android:recyclerview-swipedecorator:1.4")
     implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
+    implementation("com.google.android.material:material:1.2.1")
+    implementation("org.imaginativeworld.oopsnointernet:oopsnointernet:2.0.0")
 }

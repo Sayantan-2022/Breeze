@@ -17,6 +17,7 @@ class WelcomeScreen : AppCompatActivity() {
 
         val window : Window = window
         window.statusBarColor = getColor(R.color.welcome)
+        window.navigationBarColor = getColor(R.color.welcome_nav)
 
         val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
         val btnCreate = findViewById<Button>(R.id.btnCreate)

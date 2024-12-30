@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.breeze.ui.bookmarks.BookmarksFragment
 import com.example.breeze.ui.home.HomeFragment
 import com.example.breeze.ui.search.SearchFragment
+import com.example.breeze.util.InternetChecker
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -24,6 +25,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        InternetChecker().checkInternet(this, lifecycle)
 
         val window : Window = window
         window.statusBarColor = getColor(R.color.dark_blue)

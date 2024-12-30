@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.breeze.util.Account
+import com.example.breeze.util.InternetChecker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -22,6 +23,8 @@ class SignUp : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_sign_up)
+
+        InternetChecker().checkInternet(this, lifecycle)
 
         val btnSignUp = findViewById<Button>(R.id.btnSignUp)
 

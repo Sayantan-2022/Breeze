@@ -10,4 +10,5 @@
     <color name="orange">#ff785b</color>
     <color name="dark_blue">#141932</color>
     <color name="welcome">#E2E3DE</color>
+    <color name="welcome_nav">#F7EBDD</color>
 </resources>
