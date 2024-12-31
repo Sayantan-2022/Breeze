@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Window
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
@@ -24,10 +25,13 @@ class SignIn : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_sign_in)
 
         InternetChecker().checkInternet(this, lifecycle)
+
+        val window : Window = window
+        window.statusBarColor = getColor(R.color.dark_blue)
+        window.navigationBarColor = getColor(R.color.orange)
 
         val btnSignIn = findViewById<Button>(R.id.btnSignIn)
         val etEmail = findViewById<TextInputEditText>(R.id.ipEmail)

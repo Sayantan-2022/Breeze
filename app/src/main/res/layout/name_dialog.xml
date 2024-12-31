@@ -8,16 +8,17 @@
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/purple">
+        android:background="@color/dark_blue">
 
         <TextView
             android:layout_width="wrap_content"
+            android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="25sp"
-            android:textColor="@color/white"
+            android:textColor="@color/orange"
             android:fontFamily="@font/cavolini"
-            android:textStyle="bold | italic"
+            android:textStyle="bold"
             android:text="Change your name"/>
 
     </androidx.appcompat.widget.Toolbar>
@@ -57,6 +58,9 @@
                 android:layout_weight="1"
                 android:layout_marginRight="20dp"
                 android:textSize="16sp"
+                android:backgroundTint="@color/dark_blue"
+                android:textColor="@color/orange"
+                android:textStyle="bold"
                 android:text="Cancel" />
 
             <Button
@@ -65,6 +69,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/orange"
+                android:textColor="@color/dark_blue"
+                app:strokeColor="@color/dark_blue"
+                app:strokeWidth="3dp"
                 android:text="Change Name" />
         </LinearLayout>
     </LinearLayout>

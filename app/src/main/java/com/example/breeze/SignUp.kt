@@ -2,6 +2,7 @@ package com.example.breeze
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Window
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -21,10 +22,13 @@ class SignUp : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_sign_up)
 
         InternetChecker().checkInternet(this, lifecycle)
+
+        val window : Window = window
+        window.statusBarColor = getColor(R.color.dark_blue)
+        window.navigationBarColor = getColor(R.color.orange)
 
         val btnSignUp = findViewById<Button>(R.id.btnSignUp)
 

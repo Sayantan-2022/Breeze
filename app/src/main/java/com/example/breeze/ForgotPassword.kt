@@ -3,6 +3,7 @@ package com.example.breeze
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
+import android.view.Window
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -19,10 +20,13 @@ class ForgotPassword : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_forgot_password)
 
         InternetChecker().checkInternet(this, lifecycle)
+
+        val window : Window = window
+        window.statusBarColor = getColor(R.color.dark_blue)
+        window.navigationBarColor = getColor(R.color.dark_blue)
 
         val btnChangePassword = findViewById<Button>(R.id.btnChangePassword)
         val etEmail = findViewById<TextInputEditText>(R.id.ipEmail)
