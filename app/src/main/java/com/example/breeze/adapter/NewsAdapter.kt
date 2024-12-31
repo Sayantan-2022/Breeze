@@ -4,7 +4,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -12,15 +11,9 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.breeze.MainActivity
 import com.example.breeze.R
 import com.example.breeze.models.Bookmark
-import com.example.breeze.models.Publisher
-import com.example.breeze.ui.bookmarks.BookmarksFragment
-import com.example.breeze.ui.bookmarks.NoBookmarkFragment
-import com.google.android.material.animation.AnimationUtils
 import com.google.android.material.imageview.ShapeableImageView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
@@ -76,7 +69,7 @@ class NewsAdapter(var titleList: MutableList<String>,
         }
 
         if(bookmarkListener == null)
-        holder.defaultCard.startAnimation(android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), R.anim.default_anim))
+        holder.defaultCard.startAnimation(android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), R.anim.default_card_anim))
 
         database.child(uid).get().addOnSuccessListener { snapshot ->
             for (child in snapshot.children) {

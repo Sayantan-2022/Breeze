@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_all"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.search.SearchFragment">
 
@@ -43,9 +44,12 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:focusable="true"
+                android:clickable="true"
+                android:background="@android:color/transparent"
                 style="@style/SoftCorner"
                 android:src="@drawable/baseline_search_24" />
         </LinearLayout>
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -58,5 +62,4 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
-
 </FrameLayout>
