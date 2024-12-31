@@ -69,7 +69,7 @@ class NewsAdapter(var titleList: MutableList<String>,
         }
 
         if(bookmarkListener == null)
-        holder.defaultCard.startAnimation(android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), R.anim.default_card_anim))
+            holder.defaultCard.startAnimation(android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), R.anim.default_card_anim))
 
         database.child(uid).get().addOnSuccessListener { snapshot ->
             for (child in snapshot.children) {

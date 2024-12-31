@@ -79,6 +79,7 @@ class MainActivity : AppCompatActivity() {
 
         val tvView = findViewById<TextView>(R.id.tvView)
         val stringBuilder = StringBuilder()
+        Thread.sleep(10)
         if (fragment is SearchFragment) {
             tvView.textSize = 25F
             Thread{
