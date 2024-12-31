@@ -2,6 +2,7 @@ package com.example.breeze
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.Window
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -77,37 +78,32 @@ class MainActivity : AppCompatActivity() {
         bundle.putString("uid", uid)
         fragment.arguments = bundle
 
-        val tvView = findViewById<TextView>(R.id.tvView)
+        val tvView1 = findViewById<TextView>(R.id.tvView1)
+        val tvView2 = findViewById<TextView>(R.id.tvView2)
         val stringBuilder = StringBuilder()
         Thread.sleep(10)
         if (fragment is SearchFragment) {
-            tvView.textSize = 25F
             Thread{
+                tvView1.visibility = View.GONE
+                tvView2.visibility = View.VISIBLE
                 for (letter in "Search for News") {
                     stringBuilder.append(letter)
                     Thread.sleep(100)
                     runOnUiThread {
-                        tvView.text = stringBuilder.toString()
+                        tvView2.text = stringBuilder.toString()
                     }
 
                 }
             }.start()
         }else if (fragment is BookmarksFragment) {
-            tvView.textSize = 25F
-            Thread{
-                for (letter in "Bookmarks") {
-                    stringBuilder.append(letter)
-                    Thread.sleep(100)
-                    runOnUiThread {
-                        tvView.text = stringBuilder.toString()
-                    }
-
-                }
-            }.start()
+            tvView1.visibility = View.VISIBLE
+            tvView2.visibility = View.GONE
+            tvView1.text = "Bookmarks"
         }
         else {
-            tvView.textSize = 40F
-            tvView.text = "Breeze"
+            tvView1.visibility = View.VISIBLE
+            tvView2.visibility = View.GONE
+            tvView1.text = "Breeze"
         }
 
         val fragmentManager = supportFragmentManager

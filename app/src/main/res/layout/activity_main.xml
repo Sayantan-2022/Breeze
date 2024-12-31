@@ -27,7 +27,18 @@
             app:srcCompat="@drawable/blank_profile_picture" />
 
         <TextView
-            android:id="@+id/tvView"
+            android:id="@+id/tvView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="20dp"
+            android:textSize="35dp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="Breeze" />
+
+        <TextView
+            android:id="@+id/tvView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
