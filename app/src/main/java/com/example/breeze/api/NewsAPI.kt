@@ -8,7 +8,7 @@ import retrofit2.http.Query
 
 interface NewsAPI {
     @Headers(
-        "X-RapidAPI-Key: a123d43e74mshead248ff5ed7b70p1eea2djsnf086cf973dab",
+        "X-RapidAPI-Key: f4b81ba75cmsh2844ffd658abb7cp1b7d18jsn82f5982231a6",
         "X-RapidAPI-Host: news-api14.p.rapidapi.com"
     )
 
@@ -25,7 +25,7 @@ interface NewsAPI {
       ) : Call<News>
 
     @Headers(
-          "X-RapidAPI-Key: a123d43e74mshead248ff5ed7b70p1eea2djsnf086cf973dab",
+          "X-RapidAPI-Key: f4b81ba75cmsh2844ffd658abb7cp1b7d18jsn82f5982231a6",
           "X-RapidAPI-Host: news-api14.p.rapidapi.com"
     )
       @GET("v2/search/articles")

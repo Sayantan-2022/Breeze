@@ -16,6 +16,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.breeze.util.InternetChecker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
@@ -73,6 +76,7 @@ class SignIn : AppCompatActivity() {
                     finish()
                 } else {
                     Toast.makeText(this, "Invalid Email or Password!", Toast.LENGTH_SHORT).show()
+                    exceptionHandler(it.exception)
                 }
             }.addOnFailureListener {
                 Toast.makeText(this,
@@ -80,5 +84,19 @@ class SignIn : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+    }
+
+    private fun exceptionHandler(exception: Exception?) {
+        when (exception) {
+            is FirebaseAuthWeakPasswordException -> {
+                Toast.makeText(this, "Weak password: ${exception.reason}", Toast.LENGTH_SHORT).show()
+            }
+            is FirebaseAuthInvalidCredentialsException -> {
+                Toast.makeText(this, "User does not exist,\nPlease Sign Up!", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Toast.makeText(this, "Error: ${exception?.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

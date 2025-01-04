@@ -12,6 +12,9 @@ import com.example.breeze.util.Account
 import com.example.breeze.util.InternetChecker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
@@ -60,6 +63,8 @@ class SignUp : AppCompatActivity() {
                                 startActivity(intent)
                                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                                 finish()
+                            } else {
+                                exceptionHandler(it.exception)
                             }
                         }
                 } catch (e : Error){
@@ -69,6 +74,23 @@ class SignUp : AppCompatActivity() {
                     ).show()
                 }
             } else Toast.makeText(this, "Please all fields!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun exceptionHandler(exception: Exception?) {
+        when (exception) {
+            is FirebaseAuthWeakPasswordException -> {
+                Toast.makeText(this, "Weak password: ${exception.reason}", Toast.LENGTH_SHORT).show()
+            }
+            is FirebaseAuthInvalidCredentialsException -> {
+                Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
+            }
+            is FirebaseAuthUserCollisionException -> {
+                Toast.makeText(this, "Email already exists!", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Toast.makeText(this, "Error: ${exception?.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
