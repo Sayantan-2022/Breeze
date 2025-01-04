@@ -160,6 +160,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
     }
