@@ -103,7 +103,7 @@ class SignUp : AppCompatActivity() {
                 Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
             }
             is FirebaseAuthUserCollisionException -> {
-                Toast.makeText(this, "Email already exists!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Email already exists!\nElse User does not exist.", Toast.LENGTH_SHORT).show()
             }
             else -> {
                 Toast.makeText(this, "Error: ${exception?.localizedMessage}", Toast.LENGTH_SHORT).show()
