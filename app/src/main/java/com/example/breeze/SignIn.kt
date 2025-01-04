@@ -75,7 +75,6 @@ class SignIn : AppCompatActivity() {
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                     finish()
                 } else {
-                    Toast.makeText(this, "Invalid Email or Password!", Toast.LENGTH_SHORT).show()
                     exceptionHandler(it.exception)
                 }
             }.addOnFailureListener {
@@ -92,7 +91,7 @@ class SignIn : AppCompatActivity() {
                 Toast.makeText(this, "Weak password: ${exception.reason}", Toast.LENGTH_SHORT).show()
             }
             is FirebaseAuthInvalidCredentialsException -> {
-                Toast.makeText(this, "User does not exist,\nPlease Sign Up!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Invalid Email or Password!", Toast.LENGTH_SHORT).show()
             }
             else -> {
                 Toast.makeText(this, "Error: ${exception?.localizedMessage}", Toast.LENGTH_SHORT).show()
