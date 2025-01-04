@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Patterns
 import android.view.Window
 import android.widget.Button
 import android.widget.CheckBox
@@ -48,7 +49,18 @@ class SignIn : AppCompatActivity() {
             if(email.isNotEmpty() && password.isNotEmpty()) {
                 readData(email, password)
             } else {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                if (email.isEmpty()) {
+                    etEmail.error = "Email is required"
+                }
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    etEmail.error = "Enter a valid email address"
+                }
+                if (password.isEmpty()) {
+                    etPassword.error = "Password is required"
+                }
+                if (password.length < 8) {
+                    etPassword.error = "Password must be at least 8 characters"
+                }
             }
         }
 
