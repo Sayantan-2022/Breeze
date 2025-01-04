@@ -31,7 +31,7 @@ class NewsAdapter(var titleList: MutableList<String>,
     : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
     private lateinit var newsListener: onCardClickListener
-    private var lastPosition=-1
+    private var lastpos=-1
 
     interface onCardClickListener{
         fun onCardClick(position: Int)
@@ -137,10 +137,10 @@ class NewsAdapter(var titleList: MutableList<String>,
     }
 
     private fun setanimation(view: View, position: Int) {
-        if (position > lastPosition) {
+        if (position > lastpos) {
             val animation = android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), android.R.anim.slide_in_left)
             view.startAnimation(animation)
-            lastPosition = position
+            lastpos = position
         }
     }
 
