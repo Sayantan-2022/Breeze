@@ -20,6 +20,7 @@ import com.example.breeze.api.NewsAPI
 import com.example.breeze.models.News
 import com.example.breeze.ui.NewsWebView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputEditText
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.Runnable
@@ -42,6 +43,8 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
 
         val etQuery = view.findViewById<TextInputEditText>(R.id.etQuery)
         val btnSearch = view.findViewById<ImageButton>(R.id.btnSearch)
+
+        setupTabLayout(uid)
 
         val retrofitBuilder = Retrofit.Builder()
             .baseUrl("https://news-api14.p.rapidapi.com/")
@@ -130,5 +133,34 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
 
         val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         Handler().postDelayed(Runnable { swipeRefreshLayout?.isRefreshing = false }, 2000)
+    }
+
+    private fun setupTabLayout(uid: String) {
+        val tabLayout = view?.findViewById<TabLayout>(R.id.tab_layout)
+        val categories = listOf("Business", "Sports", "Health", "Politics")
+
+        for (category in categories) {
+            tabLayout?.addTab(tabLayout.newTab().setText(category))
+        }
+
+        val retrofitBuilder = Retrofit.Builder()
+            .baseUrl("https://news-api14.p.rapidapi.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val api = retrofitBuilder.create(NewsAPI::class.java)
+
+        tabLayout?.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.text?.let {
+                    val trendingNews = api.getTrendings(it.toString(), "en", "in", 1)
+
+                    view?.let { it1 -> loadNews(trendingNews, it1, uid) }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
     }
 }
