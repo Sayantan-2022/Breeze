@@ -31,6 +31,7 @@ class NewsAdapter(var titleList: MutableList<String>,
     : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
     private lateinit var newsListener: onCardClickListener
+    private var lastPosition=-1
 
     interface onCardClickListener{
         fun onCardClick(position: Int)
@@ -69,7 +70,7 @@ class NewsAdapter(var titleList: MutableList<String>,
         }
 
         if(bookmarkListener == null)
-            holder.defaultCard.startAnimation(android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), R.anim.default_card_anim))
+            setanimation(holder.itemView, position)
 
         database.child(uid).get().addOnSuccessListener { snapshot ->
             for (child in snapshot.children) {
@@ -135,6 +136,14 @@ class NewsAdapter(var titleList: MutableList<String>,
         }
     }
 
+    private fun setanimation(view: View, position: Int) {
+        if (position > lastPosition) {
+            val animation = android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), android.R.anim.slide_in_left)
+            view.startAnimation(animation)
+            lastPosition = position
+        }
+    }
+
     override fun getItemCount(): Int {
         return titleList.size
     }
@@ -144,7 +153,6 @@ class NewsAdapter(var titleList: MutableList<String>,
         val image = itemView.findViewById<ShapeableImageView>(R.id.headingImage)
         val excerpt = itemView.findViewById<TextView>(R.id.tvExcerpt)
         val btnBookmark = itemView.findViewById<ImageButton>(R.id.btnBookmark)
-        val defaultCard = itemView.findViewById<CardView>(R.id.defaultCard)
         val publisherName = itemView.findViewById<TextView>(R.id.tvPublisher)
         val publisherIcon = itemView.findViewById<ImageView>(R.id.publisherImage)
     }
