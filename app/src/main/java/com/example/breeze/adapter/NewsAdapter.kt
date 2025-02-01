@@ -1,5 +1,6 @@
 package com.example.breeze.adapter
 
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -16,6 +17,7 @@ import com.example.breeze.models.Bookmark
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+
 
 lateinit var database : DatabaseReference
 
@@ -26,7 +28,7 @@ class NewsAdapter(var titleList: MutableList<String>,
                   val publisherName: MutableList<String>,
                   val publisherIcon: MutableList<String>,
                   val uid : String,
-                  val context: Fragment,
+                  val fragment: Fragment,
                   val bookmarkListener: BookmarkListener? = null)
     : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
@@ -50,7 +52,7 @@ class NewsAdapter(var titleList: MutableList<String>,
         database = FirebaseDatabase.getInstance().getReference("Bookmarks")
 
         holder.title.text=titleList[position]
-        Glide.with(context)
+        Glide.with(fragment)
             .load(imageUrlList[position])
             .fitCenter()
             .placeholder(R.drawable.baseline_downloading_24)
@@ -58,7 +60,7 @@ class NewsAdapter(var titleList: MutableList<String>,
             .into(holder.image)
         holder.excerpt.text=excerptList[position]
         holder.publisherName.text=publisherName[position]
-        Glide.with(context)
+        Glide.with(fragment)
             .load(publisherIcon[position])
             .fitCenter()
             .placeholder(R.drawable.baseline_downloading_24)
@@ -80,6 +82,15 @@ class NewsAdapter(var titleList: MutableList<String>,
             }
         }.addOnFailureListener {
             Log.e("NewsAdapter", "Failed to fetch bookmarks: ${it.message}")
+        }
+
+        holder.btnShare.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.setType("text/plain")
+            val url = urlList[position]
+            shareIntent.putExtra(Intent.EXTRA_TEXT, url)
+            val title = "Share via"
+            fragment.context?.let { startActivity(it, Intent.createChooser(shareIntent, title), null) }
         }
 
         holder.btnBookmark.setOnClickListener {
@@ -138,7 +149,7 @@ class NewsAdapter(var titleList: MutableList<String>,
 
     private fun setanimation(view: View, position: Int) {
         if (position > lastpos) {
-            val animation = android.view.animation.AnimationUtils.loadAnimation(context.requireContext(), android.R.anim.slide_in_left)
+            val animation = android.view.animation.AnimationUtils.loadAnimation(fragment.requireContext(), android.R.anim.slide_in_left)
             view.startAnimation(animation)
             lastpos = position
         }
@@ -155,5 +166,6 @@ class NewsAdapter(var titleList: MutableList<String>,
         val btnBookmark = itemView.findViewById<ImageButton>(R.id.btnBookmark)
         val publisherName = itemView.findViewById<TextView>(R.id.tvPublisher)
         val publisherIcon = itemView.findViewById<ImageView>(R.id.publisherImage)
+        val btnShare = itemView.findViewById<ImageView>(R.id.btnShare)
     }
 }

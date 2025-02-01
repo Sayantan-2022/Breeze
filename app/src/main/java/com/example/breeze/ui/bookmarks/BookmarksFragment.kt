@@ -44,6 +44,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
 
         val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         val uid = arguments?.getString("uid").toString()
+        val savedLanguageCode = arguments?.getString("savedLanguageCode").toString()
 
         val titleList = mutableListOf<String>()
         val imageUrlList = mutableListOf<String>()
@@ -67,7 +68,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
 
                 loadNews(titleList, imageUrlList, excerptList, urlList, publisherName, publisherIcon, view, uid)
             } else {
-                (activity as MainActivity).replaceFragment(NoBookmarkFragment(), uid)
+                (activity as MainActivity).replaceFragment(NoBookmarkFragment(), uid, savedLanguageCode)
                 Snackbar.make(view, "No Bookmarks found!", Snackbar.LENGTH_SHORT).show()
             }
         }.addOnFailureListener {
@@ -133,7 +134,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                         it1, uid)
                 }
             } else {
-                (activity as MainActivity).replaceFragment(NoBookmarkFragment(), uid)
+                (activity as MainActivity).replaceFragment(NoBookmarkFragment(), uid, savedLanguageCode = "en")
                 view?.let { it1 -> Snackbar.make(it1, "No Bookmarks found!", Snackbar.LENGTH_SHORT).show() }
             }
         }.addOnFailureListener {
@@ -258,7 +259,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
         database.child(uid).get().addOnSuccessListener {
             if (!it.exists()) {
                 val mainActivity = activity as MainActivity
-                mainActivity.replaceFragment(NoBookmarkFragment(), uid)
+                mainActivity.replaceFragment(NoBookmarkFragment(), uid, savedLanguageCode = "en")
             }
         }
     }

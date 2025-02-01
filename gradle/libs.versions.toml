@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.3"
+agp = "8.8.0"
 chipNavigationBar = "1.4.0"
 firebaseDatabaseVersion = "20.3.0"
 glide = "4.16.0"
@@ -20,6 +20,7 @@ firebaseDatabase = "21.0.0"
 firebaseAuthKtx = "23.1.0"
 materialVersion = "1.2.1"
 oopsnointernet = "2.0.0"
+playServicesAuth = "21.3.0"
 recyclerviewSwipedecorator = "1.4"
 retrofit = "2.11.0"
 swiperefreshlayout = "1.1.0"
@@ -46,6 +47,7 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database",
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 material-v121 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 oopsnointernet = { module = "org.imaginativeworld.oopsnointernet:oopsnointernet", version.ref = "oopsnointernet" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 recyclerview-swipedecorator = { module = "it.xabaras.android:recyclerview-swipedecorator", version.ref = "recyclerviewSwipedecorator" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 

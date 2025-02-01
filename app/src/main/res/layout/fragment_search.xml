@@ -35,18 +35,35 @@
                     android:layout_height="wrap_content"
                     android:hint="Search for News" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/btnSearch"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:contentDescription="Search"
-                android:focusable="true"
-                android:clickable="true"
-                android:background="@android:color/transparent"
-                android:src="@drawable/baseline_search_24" />
+                    <ImageButton
+                        android:id="@+id/btnVoiceSearch"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginVertical="5dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@android:color/transparent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:srcCompat="@drawable/mic_24px" />
+
+                    <TextView
+                        android:id="@+id/tvVoiceSearch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
+                        android:layout_gravity="center_vertical"
+                        android:textSize="18sp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:layout_marginStart="3dp"
+                        android:text="Voice Search" />
+                </LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
         <com.google.android.material.tabs.TabLayout

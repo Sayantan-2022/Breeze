@@ -17,7 +17,7 @@ interface NewsAPI {
           @Query("topic")
           topic : String,
           @Query("language")
-          language : String,
+          language : String = "en",
           @Query("country")
           country : String,
           @Query("page")

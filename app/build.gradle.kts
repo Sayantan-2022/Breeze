@@ -62,4 +62,5 @@ dependencies {
     implementation(libs.material.v121)
     implementation(libs.oopsnointernet)
     implementation(libs.lottie)
+    implementation(libs.play.services.auth)
 }

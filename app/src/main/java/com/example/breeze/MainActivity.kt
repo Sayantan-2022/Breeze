@@ -1,13 +1,18 @@
 package com.example.breeze
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
+import com.example.breeze.models.LanguageViewModel
 import com.example.breeze.ui.bookmarks.BookmarksFragment
 import com.example.breeze.ui.home.HomeFragment
 import com.example.breeze.ui.search.SearchFragment
@@ -22,6 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var database: DatabaseReference
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +39,9 @@ class MainActivity : AppCompatActivity() {
         window.statusBarColor = getColor(R.color.dark_blue)
         window.navigationBarColor = getColor(R.color.dark_blue)
 
+        sharedPreferences = getSharedPreferences("NewsAppPrefs", Context.MODE_PRIVATE)
+        val savedLanguageCode = sharedPreferences.getString("preferred_language", "en") ?: "en"
+
         firebaseAuth = FirebaseAuth.getInstance()
 
         val uid = firebaseAuth.currentUser?.uid.toString()
@@ -40,28 +49,42 @@ class MainActivity : AppCompatActivity() {
         val bottomNav = findViewById<ChipNavigationBar>(R.id.bottomNav)
         val btnProfile = findViewById<ShapeableImageView>(R.id.btnProfile)
 
-        replaceFragment(HomeFragment(), uid)
+        replaceFragment(HomeFragment(), uid, savedLanguageCode)
 
         bottomNav.setOnItemSelectedListener {
             when (it) {
-                R.id.home -> replaceFragment(HomeFragment(), uid)
-                R.id.search -> replaceFragment(SearchFragment(), uid)
-                R.id.bookmarks -> replaceFragment(BookmarksFragment(), uid)
+                R.id.home -> replaceFragment(HomeFragment(), uid, savedLanguageCode)
+                R.id.search -> replaceFragment(SearchFragment(), uid, savedLanguageCode)
+                R.id.bookmarks -> replaceFragment(BookmarksFragment(), uid, savedLanguageCode)
             }
         }
 
         database = FirebaseDatabase.getInstance().getReference("Accounts")
         database.child(uid).get().addOnSuccessListener {
             if (it.exists()) {
-                val imageUri = it.child("imageUri").value
-                if (imageUri != null && imageUri.toString().isNotEmpty())
+                val imageUri = it.child("imageUri").value?.toString()
+                val googlePhotoUri = it.child("googlePhotoUri").value?.toString()
+
+                if (!imageUri.isNullOrEmpty()) {
                     Glide.with(this)
-                        .load(imageUri.toString())
+                        .load(imageUri)
+                        .placeholder(R.drawable.blank_profile_picture)
+                        .error(
+                            Glide.with(this)
+                                .load(googlePhotoUri)
+                                .placeholder(R.drawable.blank_profile_picture)
+                                .error(R.drawable.blank_profile_picture)
+                        )
+                        .into(btnProfile)
+                } else if (!googlePhotoUri.isNullOrEmpty()) {
+                    Glide.with(this)
+                        .load(googlePhotoUri)
                         .placeholder(R.drawable.blank_profile_picture)
                         .error(R.drawable.blank_profile_picture)
                         .into(btnProfile)
-                else
+                } else {
                     btnProfile.setImageResource(R.drawable.blank_profile_picture)
+                }
             }
         }
 
@@ -73,37 +96,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun replaceFragment(fragment: Fragment, uid : String) {
+    fun replaceFragment(fragment: Fragment, uid : String, savedLanguageCode: String) {
         val bundle = Bundle()
         bundle.putString("uid", uid)
+        bundle.putString("savedLanguageCode", savedLanguageCode)
         fragment.arguments = bundle
 
-        val tvView1 = findViewById<TextView>(R.id.tvView1)
-        val tvView2 = findViewById<TextView>(R.id.tvView2)
-        val stringBuilder = StringBuilder()
-        Thread.sleep(10)
+        val tvView = findViewById<TextView>(R.id.tvView)
         if (fragment is SearchFragment) {
-            Thread{
-                tvView1.visibility = View.GONE
-                tvView2.visibility = View.VISIBLE
-                for (letter in "Search for News") {
-                    stringBuilder.append(letter)
-                    Thread.sleep(100)
-                    runOnUiThread {
-                        tvView2.text = stringBuilder.toString()
-                    }
-
-                }
-            }.start()
-        }else if (fragment is BookmarksFragment) {
-            tvView1.visibility = View.VISIBLE
-            tvView2.visibility = View.GONE
-            tvView1.text = "Bookmarks"
-        }
-        else {
-            tvView1.visibility = View.VISIBLE
-            tvView2.visibility = View.GONE
-            tvView1.text = "Breeze"
+            tvView.text = "Search for News"
+        } else if (fragment is BookmarksFragment) {
+            tvView.text = "Bookmarks"
+        } else {
+            tvView.text = "Breeze"
         }
 
         val fragmentManager = supportFragmentManager

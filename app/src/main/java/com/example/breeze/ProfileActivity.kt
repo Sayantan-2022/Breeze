@@ -4,23 +4,32 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.view.Window
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.example.breeze.models.LanguageViewModel
 import com.example.breeze.util.InternetChecker
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -29,8 +38,13 @@ import com.google.firebase.database.FirebaseDatabase
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var database: DatabaseReference
-    private  lateinit var firebaseAuth: FirebaseAuth
-    lateinit var dialog : Dialog
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var dialog : Dialog
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var languageViewModel: LanguageViewModel
+
+    private val languages = arrayOf("English", "Hindi", "Bengali")
+    private val languageCodes = arrayOf("en", "hi", "bn")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +67,7 @@ class ProfileActivity : AppCompatActivity() {
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         val btnEditName = findViewById<ImageButton>(R.id.btnEditName)
         val tvView = findViewById<TextView>(R.id.tvView)
+        val languageSpinner = findViewById<Spinner>(R.id.languageSpinner)
 
         val stringBuilder = StringBuilder()
         Thread{
@@ -72,23 +87,47 @@ class ProfileActivity : AppCompatActivity() {
                 val name = it.child("name").value
                 val email = it.child("email").value
 
-                tvName.setText("Name : $name")
-                tvEmail.setText("Email : $email")
+                tvName.text = "Name : $name"
+                tvEmail.text = "Email : $email"
             }
         }
 
         database.child(uid).get().addOnSuccessListener {
             if (it.exists()) {
-                val imageUri = it.child("imageUri").value
-                if(imageUri != null && imageUri.toString().isNotEmpty()) {
+                val imageUri = it.child("imageUri").value?.toString()
+                val googlePhotoUri = it.child("googlePhotoUri").value?.toString()
+
+                if (!imageUri.isNullOrEmpty()) {
                     Glide.with(this)
-                        .load(imageUri.toString())
+                        .load(imageUri)
+                        .placeholder(R.drawable.blank_profile_picture)
+                        .error(
+                            Glide.with(this)
+                                .load(googlePhotoUri)
+                                .placeholder(R.drawable.blank_profile_picture)
+                                .error(R.drawable.blank_profile_picture)
+                        )
+                        .into(profileImage)
+
+                    Glide.with(this)
+                        .load(imageUri)
+                        .placeholder(R.drawable.blank_profile_picture)
+                        .error(
+                            Glide.with(this)
+                                .load(googlePhotoUri)
+                                .placeholder(R.drawable.blank_profile_picture)
+                                .error(R.drawable.blank_profile_picture)
+                        )
+                        .into(btnProfile)
+                } else if (!googlePhotoUri.isNullOrEmpty()) {
+                    Glide.with(this)
+                        .load(googlePhotoUri)
                         .placeholder(R.drawable.blank_profile_picture)
                         .error(R.drawable.blank_profile_picture)
                         .into(profileImage)
 
                     Glide.with(this)
-                        .load(imageUri.toString())
+                        .load(googlePhotoUri)
                         .placeholder(R.drawable.blank_profile_picture)
                         .error(R.drawable.blank_profile_picture)
                         .into(btnProfile)
@@ -99,6 +138,7 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
+
         btnChangePic.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
@@ -107,6 +147,30 @@ class ProfileActivity : AppCompatActivity() {
                 .start()
         }
 
+        sharedPreferences = getSharedPreferences("NewsAppPrefs", Context.MODE_PRIVATE)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, languages)
+        languageSpinner.adapter = adapter
+        val savedLanguageCode = sharedPreferences.getString("preferred_language", "en") ?: "en"
+        val savedPosition = languageCodes.indexOf(savedLanguageCode)
+        languageSpinner.setSelection(savedPosition)
+
+        languageViewModel = ViewModelProvider(this)[LanguageViewModel::class.java]
+
+        languageSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedLanguageCode = languageCodes[position]
+                if (view != null) {
+                    saveLanguagePreference(selectedLanguageCode, view)
+                }
+
+                languageViewModel.setLanguage(selectedLanguageCode)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Nothing to do if not selected
+            }
+        }
+        
         btnLogout.setOnClickListener {
             firebaseAuth.signOut()
             val intent = Intent(this, WelcomeScreen::class.java)
@@ -141,6 +205,12 @@ class ProfileActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
         }
+    }
+
+    private fun saveLanguagePreference(selectedLanguageCode : String, view : View) {
+        val editor = sharedPreferences.edit()
+        editor.putString("preferred_language", selectedLanguageCode)
+        editor.apply()
     }
 
     @Deprecated(

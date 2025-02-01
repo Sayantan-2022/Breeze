@@ -44,15 +44,29 @@ class NewsWebView : AppCompatActivity() {
         if (uid != null) {
             database.getReference("Accounts").child(uid).get().addOnSuccessListener {
                 if (it.exists()) {
-                    val imageUri = it.child("imageUri").value
-                    if (imageUri != null && imageUri.toString().isNotEmpty())
+                    val imageUri = it.child("imageUri").value?.toString()
+                    val googlePhotoUri = it.child("googlePhotoUri").value?.toString()
+
+                    if (!imageUri.isNullOrEmpty()) {
                         Glide.with(this)
-                            .load(imageUri.toString())
+                            .load(imageUri)
+                            .placeholder(R.drawable.blank_profile_picture)
+                            .error(
+                                Glide.with(this)
+                                    .load(googlePhotoUri)
+                                    .placeholder(R.drawable.blank_profile_picture)
+                                    .error(R.drawable.blank_profile_picture)
+                            )
+                            .into(btnProfile)
+                    } else if (!googlePhotoUri.isNullOrEmpty()) {
+                        Glide.with(this)
+                            .load(googlePhotoUri)
                             .placeholder(R.drawable.blank_profile_picture)
                             .error(R.drawable.blank_profile_picture)
                             .into(btnProfile)
-                    else
+                    } else {
                         btnProfile.setImageResource(R.drawable.blank_profile_picture)
+                    }
                 }
             }
         }

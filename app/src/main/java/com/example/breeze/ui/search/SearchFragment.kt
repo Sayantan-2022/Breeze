@@ -1,34 +1,43 @@
 package com.example.breeze.ui.search
 
+import android.R.attr
+import android.app.Activity.RESULT_OK
 import android.content.Intent
-import android.graphics.Canvas
 import android.os.Bundle
 import android.os.Handler
+import android.speech.RecognizerIntent
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
-import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.breeze.MainActivity
 import com.example.breeze.R
 import com.example.breeze.adapter.NewsAdapter
 import com.example.breeze.api.NewsAPI
+import com.example.breeze.models.LanguageViewModel
 import com.example.breeze.models.News
 import com.example.breeze.ui.NewsWebView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputEditText
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.Runnable
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Locale
+
 
 class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.OnRefreshListener {
 
@@ -39,10 +48,12 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
         progressBar.visibility = View.VISIBLE
 
         val uid = arguments?.getString("uid").toString()
+        val savedLanguageCode = arguments?.getString("savedLanguageCode").toString()
         val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
 
         val etQuery = view.findViewById<TextInputEditText>(R.id.etQuery)
-        val btnSearch = view.findViewById<ImageButton>(R.id.btnSearch)
+        val btnVoiceSearch = view.findViewById<ImageButton>(R.id.btnVoiceSearch)
+        val tvVoiceSearch = view.findViewById<TextView>(R.id.tvVoiceSearch)
 
         setupTabLayout(uid)
 
@@ -53,19 +64,25 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
 
         val api = retrofitBuilder.create(NewsAPI::class.java)
 
-        val trendingNews = api.getTrendings("General", "en", "in", 1)
+        val trendingNews = api.getTrendings("General", savedLanguageCode, "in", 2)
         loadNews(trendingNews, view, uid)
 
-        btnSearch.setOnClickListener {
+        etQuery.addTextChangedListener {
             progressBar.visibility = View.VISIBLE
             val searchedQuery = etQuery.text.toString().trim()
-
-            if (searchedQuery.isNotEmpty()) {
-                val searchedNews = api.searchNews(searchedQuery, "en")
+            if (searchedQuery.isEmpty()) loadNews(trendingNews, view, uid)
+            else{
+                val searchedNews = api.searchNews(searchedQuery, savedLanguageCode)
                 loadNews(searchedNews, view, uid)
-            } else {
-                Snackbar.make(view, "Empty Search!", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        btnVoiceSearch.setOnClickListener {
+            startVoiceRecognition()
+        }
+
+        tvVoiceSearch.setOnClickListener {
+            startVoiceRecognition()
         }
 
         swipeRefreshLayout.setOnRefreshListener(this@SearchFragment)
@@ -113,6 +130,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
 
     override fun onRefresh() {
         val uid = arguments?.getString("uid").toString()
+        val savedLanguageCode = arguments?.getString("savedLanguageCode").toString()
 
         val etQuery = view?.findViewById<TextInputEditText>(R.id.etQuery)
         val retrofitBuilder = Retrofit.Builder()
@@ -125,7 +143,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
         val searchedQuery = etQuery?.text.toString().trim()
 
         if (searchedQuery.isNotEmpty()) {
-            val searchedNews = api.searchNews(searchedQuery, "en")
+            val searchedNews = api.searchNews(searchedQuery, savedLanguageCode)
             view?.let { loadNews(searchedNews, it, uid) }
         } else {
             view?.let { Snackbar.make(it, "Empty Search!", Toast.LENGTH_SHORT).show() }
@@ -137,6 +155,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
 
     private fun setupTabLayout(uid: String) {
         val tabLayout = view?.findViewById<TabLayout>(R.id.tab_layout)
+        val savedLanguageCode = arguments?.getString("savedLanguageCode").toString()
         val categories = listOf("Business", "Sports", "Health", "Politics")
 
         for (category in categories) {
@@ -153,7 +172,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
         tabLayout?.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.text?.let {
-                    val trendingNews = api.getTrendings(it.toString(), "en", "in", 1)
+                    val trendingNews = api.getTrendings(it.toString(), savedLanguageCode, "in", 1)
 
                     view?.let { it1 -> loadNews(trendingNews, it1, uid) }
                 }
@@ -163,5 +182,32 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
 
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
+    }
+
+    private fun startVoiceRecognition(){
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+        )
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+
+        try {
+            voiceRecognitionLauncher.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(
+                this@SearchFragment.context,
+                "Voice search is not supported on this device.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private val voiceRecognitionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK && result.data != null) {
+            val etQuery = view?.findViewById<TextInputEditText>(R.id.etQuery)
+            val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0)
+            etQuery?.setText(spokenText)
+        }
     }
 }
