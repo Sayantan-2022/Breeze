@@ -310,8 +310,10 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                     adapter?.notifyItemInserted(position)
                     adapter?.notifyItemRangeChanged(position, adapter.itemCount)
 
-                    val navController = findNavController()
-                    navController.navigate(R.id.action_noBookmarksFragment_to_bookmarksFragment)
+                    if(isAdded) {
+                        val navController = findNavController()
+                        navController.navigate(R.id.action_noBookmarksFragment_to_bookmarksFragment)
+                    }
                 }
             }
         }
