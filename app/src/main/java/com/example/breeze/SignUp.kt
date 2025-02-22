@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.breeze.util.Account
 import com.example.breeze.util.InternetChecker
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -39,6 +40,7 @@ class SignUp : AppCompatActivity() {
         val etName = findViewById<TextInputEditText>(R.id.ipName)
         val etEmail = findViewById<TextInputEditText>(R.id.ipEmail)
         val etPassword = findViewById<TextInputEditText>(R.id.ipPassword)
+        val etPasswordLayout = findViewById<TextInputLayout>(R.id.ipPasswordLayout)
 
         btnSignUp.setOnClickListener {
             val name = etName.text.toString()
@@ -89,7 +91,9 @@ class SignUp : AppCompatActivity() {
                     etPassword.error = "Password is required"
                 }
                 if (password.length < 8) {
-                    etPassword.error = "Password must be at least 8 characters"
+                    etPasswordLayout.helperText = "Password must be at least 8 characters"
+                } else {
+                    etPasswordLayout.helperText = null
                 }
             }
         }
