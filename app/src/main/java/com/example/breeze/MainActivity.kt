@@ -25,9 +25,10 @@ import com.ismaeldivita.chipnavigation.ChipNavigationBar
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var database: DatabaseReference
-    private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var database : DatabaseReference
+    private lateinit var firebaseAuth : FirebaseAuth
+    private lateinit var sharedPreferences : SharedPreferences
+    lateinit var bottomNav: ChipNavigationBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         window.statusBarColor = getColor(R.color.dark_blue)
         window.navigationBarColor = getColor(R.color.dark_blue)
 
+        bottomNav = findViewById(R.id.bottomNav)
         sharedPreferences = getSharedPreferences("NewsAppPrefs", Context.MODE_PRIVATE)
         val savedLanguageCode = sharedPreferences.getString("preferred_language", "en") ?: "en"
 
@@ -46,10 +48,10 @@ class MainActivity : AppCompatActivity() {
 
         val uid = firebaseAuth.currentUser?.uid.toString()
 
-        val bottomNav = findViewById<ChipNavigationBar>(R.id.bottomNav)
         val btnProfile = findViewById<ShapeableImageView>(R.id.btnProfile)
 
         replaceFragment(HomeFragment(), uid, savedLanguageCode)
+        bottomNav.setItemSelected(R.id.home, true)
 
         bottomNav.setOnItemSelectedListener {
             when (it) {

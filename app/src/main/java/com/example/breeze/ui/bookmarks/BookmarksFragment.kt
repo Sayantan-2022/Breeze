@@ -1,5 +1,6 @@
 package com.example.breeze.ui.bookmarks
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
@@ -25,6 +26,7 @@ import com.example.breeze.ui.NewsWebView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.ismaeldivita.chipnavigation.ChipNavigationBar
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.Runnable
 import retrofit2.Call
@@ -35,7 +37,9 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
 {
 
     lateinit var database : DatabaseReference
+    private var bottomNav: ChipNavigationBar? = (activity as? MainActivity)?.bottomNav
 
+    @SuppressLint("CutPasteId")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -69,10 +73,17 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                 loadNews(titleList, imageUrlList, excerptList, urlList, publisherName, publisherIcon, view, uid)
             } else {
                 (activity as MainActivity).replaceFragment(NoBookmarkFragment(), uid, savedLanguageCode)
-                Snackbar.make(view, "No Bookmarks found!", Snackbar.LENGTH_SHORT).show()
+                val snackbarNoBookmark = Snackbar.make(view, "No Bookmarks found!", Snackbar.LENGTH_SHORT)
+                snackbarNoBookmark.anchorView = requireActivity().findViewById(R.id.bottomNav)
+
+                val params = snackbarNoBookmark.view.layoutParams as ViewGroup.MarginLayoutParams
+                params.bottomMargin = resources.getDimensionPixelSize(R.dimen.snackbar_margin)
+                snackbarNoBookmark.view.layoutParams = params
+
+                snackbarNoBookmark.show()
             }
         }.addOnFailureListener {
-            Snackbar.make(view, "Failed to fetch bookmarks!", Snackbar.LENGTH_SHORT).show()
+            Toast.makeText(this@BookmarksFragment.context, "Failed to fetch bookmarks!", Toast.LENGTH_SHORT).show()
         }
 
         swipeRefreshLayout.setOnRefreshListener(this@BookmarksFragment)
@@ -135,7 +146,14 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                 }
             } else {
                 (activity as MainActivity).replaceFragment(NoBookmarkFragment(), uid, savedLanguageCode = "en")
-                view?.let { it1 -> Snackbar.make(it1, "No Bookmarks found!", Snackbar.LENGTH_SHORT).show() }
+                view?.let { it1 -> val snackbarNoBookmark = Snackbar.make(it1, "No Bookmarks found!", Snackbar.LENGTH_SHORT)
+                    snackbarNoBookmark.anchorView = requireActivity().findViewById(R.id.bottomNav)
+
+                    val params = snackbarNoBookmark.view.layoutParams as ViewGroup.MarginLayoutParams
+                    params.bottomMargin = resources.getDimensionPixelSize(R.dimen.snackbar_margin)
+                    snackbarNoBookmark.view.layoutParams = params
+
+                    snackbarNoBookmark.show() }
             }
         }.addOnFailureListener {
             Toast.makeText(this@BookmarksFragment.context, "Failed to fetch bookmarks!", Toast.LENGTH_SHORT).show()
@@ -165,7 +183,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                 val position = viewHolder.absoluteAdapterPosition
 
                 if (position < 0 || position >= titleList.size) {
-                    Snackbar.make(view ?: return, "Invalid item position!", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(view ?: return, "Invalid item position!", Snackbar.LENGTH_SHORT).setAnchorView(bottomNav).show()
                     return
                 }
                 // Access the database
@@ -183,14 +201,6 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                             }
                         }
                     }
-                }
-
-                // Show a Snackbar with an Undo option
-                view?.let {
-                    Snackbar.make(it, "Bookmark Deleted!", Snackbar.LENGTH_SHORT)
-                        .setAction("Undo") {
-                            // Add undo logic if needed
-                        }.show()
                 }
             }
 
@@ -215,7 +225,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                     )
                         .addBackgroundColor(it)
                         .addActionIcon(R.drawable.round_delete_24)
-                        .addSwipeLeftLabel("Delete")
+                        .addSwipeLeftLabel("Remove")
                         .setSwipeLeftLabelTextSize(1, 16F)
                         .setSwipeLeftLabelColor(ContextCompat.getColor(this@BookmarksFragment.requireContext(), R.color.white))
                         .addCornerRadius(1, 20)
@@ -254,7 +264,17 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
             it.notifyItemRangeChanged(position, it.itemCount)
         }
 
-        Snackbar.make(requireView(), "Bookmark removed!", Snackbar.LENGTH_SHORT).show()
+        val snackbarRemoved = Snackbar.make(requireView(), "Bookmark removed!", Snackbar.LENGTH_SHORT)
+        snackbarRemoved.anchorView = requireActivity().findViewById(R.id.bottomNav)
+        snackbarRemoved.setAction("Undo"){
+
+        }
+
+        val params = snackbarRemoved.view.layoutParams as ViewGroup.MarginLayoutParams
+        params.bottomMargin = resources.getDimensionPixelSize(R.dimen.snackbar_margin)
+        snackbarRemoved.view.layoutParams = params
+
+        snackbarRemoved.show()
 
         database.child(uid).get().addOnSuccessListener {
             if (!it.exists()) {
