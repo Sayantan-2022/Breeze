@@ -24,6 +24,7 @@ playServicesAuth = "21.3.0"
 recyclerviewSwipedecorator = "1.4"
 retrofit = "2.11.0"
 swiperefreshlayout = "1.1.0"
+navigationFragmentKtx = "2.8.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +51,7 @@ oopsnointernet = { module = "org.imaginativeworld.oopsnointernet:oopsnointernet"
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 recyclerview-swipedecorator = { module = "it.xabaras.android:recyclerview-swipedecorator", version.ref = "recyclerviewSwipedecorator" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

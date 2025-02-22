@@ -103,7 +103,10 @@ class NewsAdapter(var titleList: MutableList<String>,
                                 if (valueChild.child("title").value.toString() == titleList[position]) {
                                     valueChild.ref.removeValue()
 
-                                    bookmarkListener?.onBookmarkRemoved(holder.absoluteAdapterPosition)
+                                    bookmarkListener?.onBookmarkRemoved(
+                                        holder.absoluteAdapterPosition,
+                                        valueChild.key
+                                    )
                                     break
                                 }
                             }

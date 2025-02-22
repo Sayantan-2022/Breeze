@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.example.breeze.models.LanguageViewModel
 import com.example.breeze.ui.bookmarks.BookmarksFragment
+import com.example.breeze.ui.bookmarks.NoBookmarkFragment
 import com.example.breeze.ui.home.HomeFragment
 import com.example.breeze.ui.search.SearchFragment
 import com.example.breeze.util.InternetChecker
@@ -45,11 +46,15 @@ class MainActivity : AppCompatActivity() {
         val savedLanguageCode = sharedPreferences.getString("preferred_language", "en") ?: "en"
 
         firebaseAuth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().getReference("Accounts")
 
         val uid = firebaseAuth.currentUser?.uid.toString()
 
         val btnProfile = findViewById<ShapeableImageView>(R.id.btnProfile)
 
+        if (!isFinishing) {
+            replaceFragment(HomeFragment(), uid, savedLanguageCode)
+        }
         replaceFragment(HomeFragment(), uid, savedLanguageCode)
         bottomNav.setItemSelected(R.id.home, true)
 
@@ -61,7 +66,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        database = FirebaseDatabase.getInstance().getReference("Accounts")
         database.child(uid).get().addOnSuccessListener {
             if (it.exists()) {
                 val imageUri = it.child("imageUri").value?.toString()
@@ -105,17 +109,17 @@ class MainActivity : AppCompatActivity() {
         fragment.arguments = bundle
 
         val tvView = findViewById<TextView>(R.id.tvView)
-        if (fragment is SearchFragment) {
-            tvView.text = "Search for News"
-        } else if (fragment is BookmarksFragment) {
-            tvView.text = "Bookmarks"
-        } else {
-            tvView.text = "Breeze"
+        tvView?.let {
+            it.text = when (fragment) {
+                is SearchFragment -> "Search for News"
+                is HomeFragment -> "Breeze"
+                else -> "Bookmarks"
+            }
         }
 
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameLayout, fragment)
-        fragmentTransaction.commit()
+        fragmentTransaction.commitAllowingStateLoss()
     }
 }

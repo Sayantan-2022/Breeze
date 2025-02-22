@@ -5,14 +5,17 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,15 +24,16 @@ import com.example.breeze.MainActivity
 import com.example.breeze.R
 import com.example.breeze.adapter.BookmarkListener
 import com.example.breeze.adapter.NewsAdapter
-import com.example.breeze.models.News
 import com.example.breeze.ui.NewsWebView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.Runnable
-import retrofit2.Call
 
 class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
     SwipeRefreshLayout.OnRefreshListener,
@@ -42,6 +46,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
     @SuppressLint("CutPasteId")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        retainInstance = true
 
         val progressBar = view.findViewById<ProgressBar>(R.id.progressBar3)
         progressBar.visibility = View.VISIBLE
@@ -181,6 +186,7 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val uid = arguments?.getString("uid") ?: return // Exit if uid is null
                 val position = viewHolder.absoluteAdapterPosition
+                var removedKey: String? = null
 
                 if (position < 0 || position >= titleList.size) {
                     Snackbar.make(view ?: return, "Invalid item position!", Snackbar.LENGTH_SHORT).setAnchorView(bottomNav).show()
@@ -193,15 +199,30 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
                     if(it.exists()){
                         for (valueChild in it.children) {
                             if (valueChild.child("title").value.toString() == titleList[position]) {
+                                removedKey = valueChild.key
                                 valueChild.ref.removeValue()
                                 viewHolder.itemView.findViewById<ImageButton>(R.id.btnBookmark).setImageResource(R.drawable.baseline_bookmark_border_24)
 
-                                newsAdapter.bookmarkListener?.onBookmarkRemoved(viewHolder.absoluteAdapterPosition)
+                                newsAdapter.bookmarkListener?.onBookmarkRemoved(viewHolder.absoluteAdapterPosition, removedKey)
                                 break
                             }
                         }
                     }
                 }
+
+                database.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (!snapshot.hasChildren()) {
+                            if (isAdded && activity != null) {
+                                parentFragmentManager.beginTransaction()
+                                    .replace(R.id.frameLayout, NoBookmarkFragment())
+                                    .commit()
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {}
+                })
             }
 
             override fun onChildDraw(
@@ -248,12 +269,21 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    override fun onBookmarkRemoved(position: Int) {
+    override fun onBookmarkRemoved(position: Int, removedKey: String?) {
         database = FirebaseDatabase.getInstance().getReference("Bookmarks")
         val uid = arguments?.getString("uid").toString()
 
         val recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerView)
         val adapter = recyclerView?.adapter as? NewsAdapter
+
+        val removedItem = mapOf(
+            "title" to (adapter?.titleList?.get(position) ?: ""),
+            "imageUrl" to (adapter?.imageUrlList?.get(position) ?: ""),
+            "excerpt" to (adapter?.excerptList?.get(position) ?: ""),
+            "url" to (adapter?.urlList?.get(position) ?: ""),
+            "publisherName" to (adapter?.publisherName?.get(position) ?: ""),
+            "publisherIcon" to (adapter?.publisherIcon?.get(position) ?: "")
+        )
 
         adapter?.let {
             it.titleList.removeAt(position)
@@ -267,7 +297,23 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
         val snackbarRemoved = Snackbar.make(requireView(), "Bookmark removed!", Snackbar.LENGTH_SHORT)
         snackbarRemoved.anchorView = requireActivity().findViewById(R.id.bottomNav)
         snackbarRemoved.setAction("Undo"){
+            if (removedKey != null) {
+                val dbRef = database.child(uid).child(removedKey)
+                dbRef.setValue(removedItem).addOnSuccessListener {
+                    adapter?.titleList?.add(position, removedItem["title"].toString())
+                    adapter?.imageUrlList?.add(position, removedItem["imageUrl"].toString())
+                    adapter?.excerptList?.add(position, removedItem["excerpt"].toString())
+                    adapter?.urlList?.add(position, removedItem["url"].toString())
+                    adapter?.publisherName?.add(position, removedItem["publisherName"].toString())
+                    adapter?.publisherIcon?.add(position, removedItem["publisherIcon"].toString())
 
+                    adapter?.notifyItemInserted(position)
+                    adapter?.notifyItemRangeChanged(position, adapter.itemCount)
+
+                    val navController = findNavController()
+                    navController.navigate(R.id.action_noBookmarksFragment_to_bookmarksFragment)
+                }
+            }
         }
 
         val params = snackbarRemoved.view.layoutParams as ViewGroup.MarginLayoutParams
@@ -276,11 +322,33 @@ class BookmarksFragment : Fragment(R.layout.fragment_bookmarks),
 
         snackbarRemoved.show()
 
-        database.child(uid).get().addOnSuccessListener {
-            if (!it.exists()) {
-                val mainActivity = activity as MainActivity
-                mainActivity.replaceFragment(NoBookmarkFragment(), uid, savedLanguageCode = "en")
+        checkBookmarksAndUpdateFragment(uid)
+    }
+
+    private fun checkBookmarksAndUpdateFragment(uid: String) {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("Bookmarks").child(uid)
+
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists() && snapshot.childrenCount > 0) {
+                    if (isAdded) {
+                        requireActivity().supportFragmentManager.beginTransaction()
+                            .detach(this@BookmarksFragment)
+                            .attach(this@BookmarksFragment)
+                            .commitAllowingStateLoss()
+                    }
+                } else {
+                    if (isAdded) {
+                        requireActivity().supportFragmentManager.beginTransaction()
+                            .replace(R.id.frameLayout, NoBookmarkFragment())
+                            .commitAllowingStateLoss()
+                    }
+                }
             }
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Error fetching bookmarks: ${error.message}")
+            }
+        })
     }
 }
