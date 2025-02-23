@@ -87,8 +87,8 @@ class ProfileActivity : AppCompatActivity() {
                 val name = it.child("name").value
                 val email = it.child("email").value
 
-                tvName.text = "Name : $name"
-                tvEmail.text = "Email : $email"
+                tvName.text = "$name"
+                tvEmail.text = "$email"
             }
         }
 
