@@ -94,7 +94,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
         newsCall.enqueue(object : Callback<News?> {
             override fun onResponse(call: Call<News?>, response: Response<News?>) {
                 val responseBody = response.body()
-                progressBar.visibility = View.GONE
+
                 val dataList = responseBody?.data ?: emptyList()
                 if (dataList.isNotEmpty()) {
                     val titleList = dataList.map { it.title }.toMutableList()
@@ -108,6 +108,7 @@ class SearchFragment : Fragment(R.layout.fragment_search), SwipeRefreshLayout.On
                     recyclerView.layoutManager = LinearLayoutManager(context)
                     val newsAdapter = NewsAdapter(titleList, imageUrlList, excerptList, urlList, publisherName, publisherIcon, uid, this@SearchFragment)
                     recyclerView.adapter = newsAdapter
+                    progressBar.visibility = View.GONE
 
                     newsAdapter.setOnCardClickListener(object : NewsAdapter.onCardClickListener {
                         override fun onCardClick(position: Int) {
