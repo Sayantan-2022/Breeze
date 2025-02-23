@@ -33,10 +33,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"
-            android:textSize="40dp"
+            android:textSize="40sp"
             android:textStyle="bold"
             android:textColor="@color/white"
-            android:text="Breeze" />
+            android:text="@string/breeze" />
 
     </androidx.cardview.widget.CardView>
 
@@ -70,6 +70,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/purple"
             android:clickable="true"
+            android:contentDescription="TODO"
             android:focusable="true"
             android:scaleType="fitCenter"
             android:scaleX="0.7"
@@ -80,7 +81,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.946"
-            app:srcCompat="@drawable/baseline_camera_24" />
+            app:srcCompat="@drawable/baseline_camera_24"
+            tools:ignore="ContentDescription,HardcodedText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -103,7 +105,8 @@
                 android:textSize="25sp"
                 android:textColor="@color/black"
                 android:layout_gravity="center_vertical"
-                android:text="Name" />
+                android:text="Name"
+                tools:ignore="HardcodedText" />
 
             <ImageButton
                 android:id="@+id/btnEditName"
@@ -111,7 +114,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                app:srcCompat="@drawable/baseline_edit_24" />
+                android:contentDescription="TODO"
+                app:srcCompat="@drawable/baseline_edit_24"
+                tools:ignore="ContentDescription,HardcodedText" />
         </LinearLayout>
 
         <TextView
@@ -123,7 +128,8 @@
             android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="5dp"
             android:layout_marginVertical="5dp"
-            android:text="Email" />
+            android:text="Email"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
     </LinearLayout>
 
@@ -144,7 +150,8 @@
             android:layout_marginHorizontal="15dp"
             android:layout_marginVertical="15dp"
             android:textStyle="bold"
-            android:text="Language : " />
+            android:text="Language : "
+            tools:ignore="HardcodedText" />
 
         <Spinner
             android:id="@+id/languageSpinner"
@@ -170,7 +177,8 @@
             android:textSize="19sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="HardcodedText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
